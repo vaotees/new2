@@ -1,0 +1,114 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Zap, Menu, X } from 'lucide-react'
+
+const navLinks = [
+  { href: '#services', label: 'Serviços' },
+  { href: '#testimonials', label: 'Cases' },
+  { href: '#contact', label: 'Contato' },
+]
+
+export default function Navbar() {
+  const [scrolled, setScrolled] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20)
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  return (
+    <>
+      <motion.nav
+        initial={{ y: -80, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled ? 'glass-panel rounded-none border-x-0 border-t-0' : 'bg-transparent border-transparent'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          {/* Logo */}
+          <a href="#" className="flex items-center gap-2 group">
+            <div className="w-8 h-8 rounded-lg bg-gold-gradient flex items-center justify-center shadow-gold">
+              <Zap size={16} className="text-background-dark" fill="currentColor" />
+            </div>
+            <span className="text-white font-bold text-xl tracking-tight">
+              AURÁ<span className="text-gold">.</span>
+            </span>
+          </a>
+
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center gap-8">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="text-slate-400 hover:text-white text-sm font-medium transition-colors duration-200 relative group"
+              >
+                {link.label}
+                <span className="absolute -bottom-1 left-0 w-0 h-px bg-gold transition-all duration-300 group-hover:w-full" />
+              </a>
+            ))}
+          </div>
+
+          {/* CTA Button */}
+          <div className="hidden md:block">
+            <motion.a
+              href="#contact"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.97 }}
+              className="btn-gold px-6 py-2.5 text-sm font-bold"
+            >
+              Iniciar Projeto
+            </motion.a>
+          </div>
+
+          {/* Mobile hamburger */}
+          <button
+            className="md:hidden text-slate-300 hover:text-white p-1"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Menu"
+          >
+            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+      </motion.nav>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
+            className="fixed top-16 left-4 right-4 z-40 glass-panel p-6 flex flex-col gap-4"
+          >
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                className="text-slate-300 hover:text-white font-medium text-lg py-2 border-b border-white/5 last:border-0"
+              >
+                {link.label}
+              </a>
+            ))}
+            <motion.a
+              href="#contact"
+              whileTap={{ scale: 0.97 }}
+              onClick={() => setMobileOpen(false)}
+              className="btn-gold px-6 py-3 text-sm font-bold mt-2"
+            >
+              Iniciar Projeto
+            </motion.a>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  )
+}
