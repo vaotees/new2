@@ -1,21 +1,40 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Palette, Code2, TrendingUp, Target, Share2, BarChart3, LucideIcon } from 'lucide-react'
+import {
+  Palette, Code2, TrendingUp, Target, Share2, BarChart3,
+  Check, Star, Zap, Globe, Shield, Rocket, Cpu, Users,
+  BarChart2, Award, Lightbulb, Lock, Layers, LucideIcon
+} from 'lucide-react'
 
-interface Service {
+// Map from icon name string (stored in DB) → Lucide component
+const ICON_MAP: Record<string, LucideIcon> = {
+  Check, Star, Zap, Globe, Shield, Rocket, Code2, Cpu,
+  Users, BarChart2, Award, Target, Lightbulb, Lock, Layers,
+  Palette, TrendingUp, Share2, BarChart3,
+  // aliases used by Bolt/Bol abbreviation in the icon picker
+  Bolt: Zap,
+}
+
+interface CMSFeature {
+  id: string
+  title: string
+  description: string
+  icon: string
+}
+
+interface StaticService {
   icon: LucideIcon
   title: string
   description: string
   highlight?: boolean
 }
 
-const services: Service[] = [
+const staticServices: StaticService[] = [
   {
     icon: Palette,
     title: 'Branding Estratégico',
     description: 'Identidade visual que comunica autoridade, gera reconhecimento imediato e cria conexão emocional com seu público.',
-    highlight: false,
   },
   {
     icon: Code2,
@@ -27,33 +46,27 @@ const services: Service[] = [
     icon: TrendingUp,
     title: 'SEO & Performance',
     description: 'Domine os resultados de busca organicamente. Estratégias técnicas e de conteúdo que aumentam visibilidade e autoridade.',
-    highlight: false,
   },
   {
     icon: Target,
     title: 'Tráfego Pago',
     description: 'Campanhas de performance no Google, Meta e LinkedIn que maximizam ROI e entregam leads qualificados de forma previsível.',
-    highlight: false,
   },
   {
     icon: Share2,
     title: 'Social Media',
     description: 'Gestão estratégica de redes sociais com conteúdo que posiciona sua marca e engaja a audiência certa.',
-    highlight: false,
   },
   {
     icon: BarChart3,
     title: 'Analytics & BI',
     description: 'Dashboards em tempo real e relatórios que transformam dados em decisões inteligentes para seu negócio.',
-    highlight: false,
   },
 ]
 
 const containerVariants = {
   hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.1 },
-  },
+  visible: { transition: { staggerChildren: 0.1 } },
 }
 
 const cardVariants = {
@@ -61,7 +74,13 @@ const cardVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
 }
 
-export default function FeaturesGrid() {
+interface FeaturesGridProps {
+  cmsFeatures?: CMSFeature[]
+}
+
+export default function FeaturesGrid({ cmsFeatures }: FeaturesGridProps) {
+  const hasCmsData = cmsFeatures && cmsFeatures.length > 0
+
   return (
     <section id="services" className="py-24 relative">
       {/* Section glow */}
@@ -102,39 +121,56 @@ export default function FeaturesGrid() {
           viewport={{ once: true, margin: '-80px' }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {services.map((service) => {
-            const Icon = service.icon
-            return (
-              <motion.div
-                key={service.title}
-                variants={cardVariants}
-                whileHover={{ y: -6, transition: { duration: 0.25 } }}
-                className={`glass-panel p-7 flex flex-col gap-5 group cursor-pointer relative overflow-hidden ${
-                  service.highlight ? 'border-gold/30 shadow-gold' : ''
-                }`}
-              >
-                {service.highlight && (
-                  <div className="absolute top-4 right-4 text-[10px] font-bold uppercase tracking-widest bg-gold-gradient text-background-dark px-2 py-1 rounded-full">
-                    Popular
-                  </div>
-                )}
-
-                {/* Icon */}
-                <div className="w-12 h-12 rounded-xl bg-gold/10 border border-gold/20 flex items-center justify-center group-hover:bg-gold/20 transition-colors duration-300">
-                  <Icon size={22} className="text-gold" strokeWidth={1.5} />
-                </div>
-
-                {/* Content */}
-                <div>
-                  <h3 className="text-white font-bold text-lg mb-2">{service.title}</h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">{service.description}</p>
-                </div>
-
-                {/* Hover line */}
-                <div className="w-0 h-px bg-gold group-hover:w-full transition-all duration-500 mt-auto" />
-              </motion.div>
-            )
-          })}
+          {hasCmsData
+            ? // --- CMS-driven cards ---
+              cmsFeatures.map((feature) => {
+                const Icon = ICON_MAP[feature.icon] ?? Check
+                return (
+                  <motion.div
+                    key={feature.id}
+                    variants={cardVariants}
+                    whileHover={{ y: -6, transition: { duration: 0.25 } }}
+                    className="glass-panel p-7 flex flex-col gap-5 group cursor-pointer relative overflow-hidden"
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-gold/10 border border-gold/20 flex items-center justify-center group-hover:bg-gold/20 transition-colors duration-300">
+                      <Icon size={22} className="text-gold" strokeWidth={1.5} />
+                    </div>
+                    <div>
+                      <h3 className="text-white font-bold text-lg mb-2">{feature.title}</h3>
+                      <p className="text-slate-400 text-sm leading-relaxed">{feature.description}</p>
+                    </div>
+                    <div className="w-0 h-px bg-gold group-hover:w-full transition-all duration-500 mt-auto" />
+                  </motion.div>
+                )
+              })
+            : // --- Static fallback cards ---
+              staticServices.map((service) => {
+                const Icon = service.icon
+                return (
+                  <motion.div
+                    key={service.title}
+                    variants={cardVariants}
+                    whileHover={{ y: -6, transition: { duration: 0.25 } }}
+                    className={`glass-panel p-7 flex flex-col gap-5 group cursor-pointer relative overflow-hidden ${
+                      service.highlight ? 'border-gold/30 shadow-gold' : ''
+                    }`}
+                  >
+                    {service.highlight && (
+                      <div className="absolute top-4 right-4 text-[10px] font-bold uppercase tracking-widest bg-gold-gradient text-background-dark px-2 py-1 rounded-full">
+                        Popular
+                      </div>
+                    )}
+                    <div className="w-12 h-12 rounded-xl bg-gold/10 border border-gold/20 flex items-center justify-center group-hover:bg-gold/20 transition-colors duration-300">
+                      <Icon size={22} className="text-gold" strokeWidth={1.5} />
+                    </div>
+                    <div>
+                      <h3 className="text-white font-bold text-lg mb-2">{service.title}</h3>
+                      <p className="text-slate-400 text-sm leading-relaxed">{service.description}</p>
+                    </div>
+                    <div className="w-0 h-px bg-gold group-hover:w-full transition-all duration-500 mt-auto" />
+                  </motion.div>
+                )
+              })}
         </motion.div>
       </div>
     </section>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Zap, Menu, X } from 'lucide-react'
+import { Zap, Menu, X, Lock } from 'lucide-react'
 
 const navLinks = [
   { href: '#services', label: 'Serviços' },
@@ -55,8 +55,17 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* CTA Button */}
-          <div className="hidden md:block">
+          {/* Actions: Admin + CTA */}
+          <div className="hidden md:flex items-center gap-4">
+            <motion.a
+              href="/admin"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.97 }}
+              className="flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-white px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 transition-all"
+            >
+              <Lock size={12} />
+              Admin
+            </motion.a>
             <motion.a
               href="#contact"
               whileHover={{ scale: 1.05 }}
@@ -98,14 +107,25 @@ export default function Navbar() {
                 {link.label}
               </a>
             ))}
-            <motion.a
-              href="#contact"
-              whileTap={{ scale: 0.97 }}
-              onClick={() => setMobileOpen(false)}
-              className="btn-gold px-6 py-3 text-sm font-bold mt-2"
-            >
-              Iniciar Projeto
-            </motion.a>
+            <div className="flex flex-col gap-3 mt-4">
+              <motion.a
+                href="/admin"
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center justify-center gap-2 text-sm font-medium text-slate-300 hover:text-white px-6 py-3 rounded-lg bg-white/5 border border-white/10"
+              >
+                <Lock size={14} />
+                Área Administrativa
+              </motion.a>
+              <motion.a
+                href="#contact"
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setMobileOpen(false)}
+                className="btn-gold px-6 py-3 text-sm font-bold text-center"
+              >
+                Iniciar Projeto
+              </motion.a>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
