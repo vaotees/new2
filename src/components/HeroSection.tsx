@@ -81,20 +81,20 @@ export default function HeroSection() {
           className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[1.05] tracking-tight mb-6"
         >
           Especialistas em{' '}
-          <span className="relative inline-block align-bottom min-w-[300px] h-[1.2em] overflow-hidden text-orange-gradient">
+          <span className="relative inline-block align-bottom min-w-[280px] h-[1.2em]">
             <AnimatePresence exitBeforeEnter>
               <motion.span
                 key={currentService}
-                initial={{ y: '100%', opacity: 0 }}
+                initial={{ y: '20%', opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                exit={{ y: '-100%', opacity: 0 }}
-                transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-                className="absolute inset-0 flex items-center justify-center whitespace-nowrap"
+                exit={{ y: '-20%', opacity: 0 }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+                className="absolute inset-x-0 bottom-0 flex items-center justify-center text-orange-gradient whitespace-nowrap"
               >
                 {services[currentService]}
               </motion.span>
             </AnimatePresence>
-            {/* Invisível apenas para manter o espaço */}
+            {/* Invisível apenas para manter o espaço e altura do H1 */}
             <span className="invisible opacity-0 select-none pointer-events-none px-4">
               {services[0]}
             </span>
