@@ -162,21 +162,30 @@ export default function ContactForm() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 relative">
             <label htmlFor="service" className="text-xs font-bold uppercase tracking-widest text-slate-400">Qual serviço você deseja?</label>
-            <select
-                id="service"
-                name="service"
-                required
-                value={formData.service}
-                onChange={handleChange}
-                className="bg-background-navy border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all appearance-none"
-            >
-              <option value="" disabled>Selecione uma opção...</option>
-              {services.map((srv) => (
-                  <option key={srv} value={srv}>{srv}</option>
-              ))}
-            </select>
+            <div className="relative group">
+              <select
+                  id="service"
+                  name="service"
+                  required
+                  value={formData.service}
+                  onChange={handleChange}
+                  className="w-full bg-background-navy border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all appearance-none cursor-pointer pr-10"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23f97316' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 15 5 5 5-5'/%3E%3Cpath d='m7 9 5-5 5 5'/%3E%3C/svg%3E")`,
+                    backgroundPosition: 'right 12px center',
+                    backgroundRepeat: 'no-repeat',
+                  }}
+              >
+                <option value="" disabled className="bg-background-navy text-slate-500">Selecione uma opção...</option>
+                {services.map((srv) => (
+                    <option key={srv} value={srv} className="bg-background-navy text-white py-4">
+                      {srv}
+                    </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="flex flex-col gap-2">
