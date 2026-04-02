@@ -34,21 +34,21 @@ export default function AdminDashboard() {
 
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           <div className="bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm">
-            <h3 className="text-white/60 mb-2 font-medium">Features Cadastradas</h3>
+            <h3 className="text-white/60 mb-2 font-medium">Serviços Cadastrados</h3>
             <p className="text-4xl font-bold text-white">{features.length}</p>
           </div>
         </section>
 
         <section>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-white">Últimas Features</h2>
+            <h2 className="text-2xl font-bold text-white">Últimos Serviços</h2>
           </div>
           
           <div className="bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm overflow-hidden">
             {loading ? (
               <div className="p-8 text-center text-white/50">Carregando dados...</div>
             ) : features.length === 0 ? (
-              <div className="p-8 text-center text-white/50">Nenhuma feature cadastrada.</div>
+              <div className="p-8 text-center text-white/50">Nenhum serviço cadastrado.</div>
             ) : (
               <table className="w-full text-left">
                 <thead className="bg-white/5 border-b border-white/10">

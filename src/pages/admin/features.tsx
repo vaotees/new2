@@ -245,7 +245,7 @@ export default function AdminFeatures() {
               className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-5 py-3 rounded-xl font-medium transition-all shadow-lg shadow-blue-500/20"
             >
               <Plus className="w-4 h-4" />
-              Nova Feature
+              Novo Serviço
             </button>
           </div>
 
@@ -257,8 +257,8 @@ export default function AdminFeatures() {
           ) : features.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-white/40 border border-dashed border-white/20 rounded-2xl">
               <LayoutGrid className="w-12 h-12 mb-4 opacity-50" />
-              <p className="font-medium">Nenhuma feature cadastrada</p>
-              <p className="text-sm mt-1">Clique em "Nova Feature" para começar.</p>
+              <p className="font-medium">Nenhum serviço cadastrado</p>
+              <p className="text-sm mt-1">Clique em "Novo Serviço" para começar.</p>
             </div>
           ) : (
             <div className="grid gap-4">
@@ -331,7 +331,7 @@ export default function AdminFeatures() {
             {/* Modal header */}
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-white">
-                {editingId ? "Editar Feature" : "Nova Feature"}
+                {editingId ? "Editar Serviço" : "Novo Serviço"}
               </h2>
               <button
                 onClick={closeForm}

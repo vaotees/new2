@@ -40,7 +40,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             Dashboard
           </a>
           <a href="/admin/features" className="block text-white/70 hover:text-white transition-colors">
-            Features
+            Serviços
           </a>
         </nav>
         <button
