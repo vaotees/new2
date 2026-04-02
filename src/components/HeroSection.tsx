@@ -5,25 +5,51 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, Play, Star } from 'lucide-react'
 import { Button } from './Button'
 
-const services = [
-  'Autoridade Digital',
-  'Websites Premium',
-  'Design & Branding',
-  'Automação com IA',
-  'Tráfego Pago',
-  'Landing Pages',
-  'Redes Sociais',
-]
+export interface SectionHeroConfig {
+  badge: string
+  titlePrefix: string
+  rotatingWords: string
+  description: string
+  ctaPrimaryText: string
+  ctaPrimaryUrl: string
+  ctaSecondaryText: string
+  ctaSecondaryUrl: string
+  socialClients: string
+  socialRating: string
+  socialRevenue: string
+}
 
-export default function HeroSection() {
+interface HeroSectionProps {
+  sectionConfig?: SectionHeroConfig | null
+}
+
+export default function HeroSection({ sectionConfig }: HeroSectionProps) {
+  const config = sectionConfig || {
+    badge: "EM Soluções Digitais",
+    titlePrefix: "Especialistas em",
+    rotatingWords: "Autoridade Digital,Websites Premium,Design & Branding,Automação com IA,Tráfego Pago,Landing Pages,Redes Sociais",
+    description: "Estratégia, design e tecnologia de ponta para posicionar seu negócio como referência no mercado digital. Resultados mensuráveis, estética impecável.",
+    ctaPrimaryText: "Quero minha Autoridade Digital",
+    ctaPrimaryUrl: "#contact",
+    ctaSecondaryText: "Ver nossos casos",
+    ctaSecondaryUrl: "#services",
+    socialClients: "+127 clientes",
+    socialRating: "4.9 / 5.0",
+    socialRevenue: "R$12M+ em resultados gerados",
+  }
+
+  const services = config.rotatingWords.split(',').map(s => s.trim()).filter(Boolean)
+
   const [currentService, setCurrentService] = useState(0)
 
   useEffect(() => {
+    if (services.length <= 1) return
     const timer = setInterval(() => {
       setCurrentService((prev) => (prev + 1) % services.length)
     }, 3500)
     return () => clearInterval(timer)
-  }, [])
+  }, [services.length])
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background radial glow */}
@@ -68,7 +94,7 @@ export default function HeroSection() {
         >
           <Star size={12} className="text-orange fill-orange" />
           <span className="text-xs font-semibold text-orange uppercase tracking-widest">
-            EM Soluções Digitais
+            {config.badge}
           </span>
           <Star size={12} className="text-orange fill-orange" />
         </motion.div>
@@ -80,7 +106,7 @@ export default function HeroSection() {
           transition={{ duration: 0.8, delay: 0.3 }}
           className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[1.05] tracking-tight mb-6"
         >
-          Especialistas em{' '}
+          {config.titlePrefix}{' '}
           <span className="relative inline-block align-bottom min-w-[280px] h-[1.2em]">
             <AnimatePresence exitBeforeEnter>
               <motion.span
@@ -94,7 +120,7 @@ export default function HeroSection() {
                 {services[currentService]}
               </motion.span>
             </AnimatePresence>
-            {/* Invisível apenas para manter o espaço e altura do H1 */}
+            {/* Invisible placeholder for height */}
             <span className="invisible opacity-0 select-none pointer-events-none px-4">
               {services[0]}
             </span>
@@ -108,8 +134,7 @@ export default function HeroSection() {
           transition={{ duration: 0.8, delay: 0.5 }}
           className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed"
         >
-          Estratégia, design e tecnologia de ponta para posicionar seu negócio
-          como referência no mercado digital. Resultados mensuráveis, estética impecável.
+          {config.description}
         </motion.p>
 
         {/* CTA Buttons */}
@@ -120,21 +145,21 @@ export default function HeroSection() {
           className="flex flex-col sm:flex-row gap-4 justify-center items-center"
         >
           <Button
-            href="#contact"
+            href={config.ctaPrimaryUrl}
             variant="primary"
             icon={ArrowRight}
             size="md"
           >
-            Quero minha Autoridade Digital
+            {config.ctaPrimaryText}
           </Button>
 
           <Button
-            href="#services"
+            href={config.ctaSecondaryUrl}
             variant="outline"
             icon={Play}
             size="md"
           >
-            Ver nossos casos
+            {config.ctaSecondaryText}
           </Button>
         </motion.div>
 
@@ -155,17 +180,17 @@ export default function HeroSection() {
                 />
               ))}
             </div>
-            <span>+127 clientes</span>
+            <span>{config.socialClients}</span>
           </div>
           <div className="w-px h-4 bg-white/10 hidden sm:block" />
           <div className="flex items-center gap-1">
             {[1, 2, 3, 4, 5].map((i) => (
               <Star key={i} size={14} className="text-orange fill-orange" />
             ))}
-            <span className="ml-1">4.9 / 5.0</span>
+            <span className="ml-1">{config.socialRating}</span>
           </div>
           <div className="w-px h-4 bg-white/10 hidden sm:block" />
-          <span>R$12M+ em resultados gerados</span>
+          <span>{config.socialRevenue}</span>
         </motion.div>
       </div>
 
@@ -174,3 +199,4 @@ export default function HeroSection() {
     </section>
   )
 }
+

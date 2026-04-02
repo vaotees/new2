@@ -96,3 +96,19 @@ model SectionTestimonialsConfig {
   description    String   @default("Resultados reais de marcas que escolheram a autoridade digital.")
   updatedAt      DateTime @updatedAt
 }
+
+model SectionHeroConfig {
+  id              String   @id @default("singleton")
+  badge           String   @default("EM Soluções Digitais")
+  titlePrefix     String   @default("Especialistas em")
+  rotatingWords   String   @default("Autoridade Digital,Websites Premium,Design & Branding,Automação com IA,Tráfego Pago,Landing Pages,Redes Sociais")
+  description     String   @default("Estratégia, design e tecnologia de ponta para posicionar seu negócio como referência no mercado digital. Resultados mensuráveis, estética impecável.")
+  ctaPrimaryText  String   @default("Quero minha Autoridade Digital")
+  ctaPrimaryUrl   String   @default("#contact")
+  ctaSecondaryText String  @default("Ver nossos casos")
+  ctaSecondaryUrl String   @default("#services")
+  socialClients   String   @default("+127 clientes")
+  socialRating    String   @default("4.9 / 5.0")
+  socialRevenue   String   @default("R$12M+ em resultados gerados")
+  updatedAt       DateTime @updatedAt
+}

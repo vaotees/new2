@@ -39,6 +39,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <a href="/admin" className="block text-white/70 hover:text-white transition-colors">
             Dashboard
           </a>
+          <a href="/admin/hero" className="block text-white/70 hover:text-white transition-colors">
+            Hero
+          </a>
           <a href="/admin/features" className="block text-white/70 hover:text-white transition-colors">
             Serviços
           </a>
