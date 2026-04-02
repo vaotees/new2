@@ -1,6 +1,6 @@
 import AdminLayout from "../../components/AdminLayout"
 import { useState, useEffect, useRef } from "react"
-import { Plus, Pencil, Trash2, X, Check, Loader2, LayoutGrid } from "lucide-react"
+import { Plus, Pencil, Trash2, X, Check, Loader2, LayoutGrid, ChevronUp, ChevronDown } from "lucide-react"
 import * as LucideIcons from "lucide-react"
 
 interface Feature {
@@ -9,6 +9,7 @@ interface Feature {
   description: string
   icon: string
   highlight: boolean
+  order?: number
   createdAt?: string
 }
 
@@ -51,6 +52,34 @@ export default function AdminFeatures() {
   useEffect(() => {
     if (showForm) setTimeout(() => titleRef.current?.focus(), 50)
   }, [showForm])
+
+  const moveFeature = async (index: number, direction: 'up' | 'down') => {
+    const newFeatures = [...features]
+    if (direction === 'up' && index > 0) {
+      const temp = newFeatures[index]
+      newFeatures[index] = newFeatures[index - 1]
+      newFeatures[index - 1] = temp
+    } else if (direction === 'down' && index < newFeatures.length - 1) {
+      const temp = newFeatures[index]
+      newFeatures[index] = newFeatures[index + 1]
+      newFeatures[index + 1] = temp
+    } else {
+      return
+    }
+    
+    setFeatures(newFeatures)
+  
+    const ids = newFeatures.map(f => f.id)
+    try {
+      await fetch("/api/features/reorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids }),
+      })
+    } catch(e) {
+      console.error(e)
+    }
+  }
 
   const openCreate = () => {
     setEditingId(null)
@@ -111,7 +140,7 @@ export default function AdminFeatures() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-white mb-1">Features</h1>
-            <p className="text-white/50">Gerencie os itens exibidos na seção de features do site.</p>
+            <p className="text-white/50">Gerencie os itens exibidos na seção de features do site. Altere a ordem usando as setas para cima ou para baixo.</p>
           </div>
           <button
             onClick={openCreate}
@@ -136,13 +165,18 @@ export default function AdminFeatures() {
           </div>
         ) : (
           <div className="grid gap-4">
-            {features.map((feature) => {
+            {features.map((feature, idx) => {
               const IconComp = (LucideIcons as any)[feature.icon] || LucideIcons.Check
               return (
                 <div
                   key={feature.id}
-                  className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-start gap-4 hover:bg-white/8 transition-colors group relative"
+                  className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-center gap-4 hover:bg-white/8 transition-colors group relative"
                 >
+                  <div className="flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button disabled={idx === 0} onClick={() => moveFeature(idx, 'up')} className="text-white/40 hover:text-white disabled:opacity-20" title="Mover para cima"><ChevronUp size={16} /></button>
+                    <button disabled={idx === features.length - 1} onClick={() => moveFeature(idx, 'down')} className="text-white/40 hover:text-white disabled:opacity-20" title="Mover para baixo"><ChevronDown size={16} /></button>
+                  </div>
+                  
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-emerald-500/20 border border-white/10 flex items-center justify-center text-blue-400 flex-shrink-0">
                     <IconComp className="w-5 h-5" />
                   </div>

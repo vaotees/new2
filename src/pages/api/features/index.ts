@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === "GET") {
     try {
       const features = await prisma.feature.findMany({
-        orderBy: { createdAt: "desc" },
+        orderBy: [{ order: "asc" }, { createdAt: "desc" }],
       })
       return res.status(200).json(features)
     } catch (error) {
@@ -25,12 +25,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const { title, description, icon, highlight } = req.body
       
+      const count = await prisma.feature.count()
+
       const feature = await prisma.feature.create({
         data: {
           title,
           description,
           icon: icon || "Check",
           highlight: highlight || false,
+          order: count,
         },
       })
       return res.status(201).json(feature)
