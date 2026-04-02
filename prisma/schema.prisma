@@ -110,5 +110,9 @@ model SectionHeroConfig {
   socialClients   String   @default("+127 clientes")
   socialRating    String   @default("4.9 / 5.0")
   socialRevenue   String   @default("R$12M+ em resultados gerados")
+  socialAvatar1   String?
+  socialAvatar2   String?
+  socialAvatar3   String?
+  socialAvatar4   String?
   updatedAt       DateTime @updatedAt
 }

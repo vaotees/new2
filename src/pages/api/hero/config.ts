@@ -31,7 +31,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const {
         badge, titlePrefix, rotatingWords, description,
         ctaPrimaryText, ctaPrimaryUrl, ctaSecondaryText, ctaSecondaryUrl,
-        socialClients, socialRating, socialRevenue
+        socialClients, socialRating, socialRevenue,
+        socialAvatar1, socialAvatar2, socialAvatar3, socialAvatar4
       } = req.body
 
       const config = await prisma.sectionHeroConfig.upsert({
@@ -39,13 +40,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         update: {
           badge, titlePrefix, rotatingWords, description,
           ctaPrimaryText, ctaPrimaryUrl, ctaSecondaryText, ctaSecondaryUrl,
-          socialClients, socialRating, socialRevenue
+          socialClients, socialRating, socialRevenue,
+          socialAvatar1, socialAvatar2, socialAvatar3, socialAvatar4
         },
         create: {
           id: "singleton",
           badge, titlePrefix, rotatingWords, description,
           ctaPrimaryText, ctaPrimaryUrl, ctaSecondaryText, ctaSecondaryUrl,
-          socialClients, socialRating, socialRevenue
+          socialClients, socialRating, socialRevenue,
+          socialAvatar1, socialAvatar2, socialAvatar3, socialAvatar4
         }
       })
       return res.status(200).json(config)

@@ -17,6 +17,10 @@ export interface SectionHeroConfig {
   socialClients: string
   socialRating: string
   socialRevenue: string
+  socialAvatar1?: string | null
+  socialAvatar2?: string | null
+  socialAvatar3?: string | null
+  socialAvatar4?: string | null
 }
 
 interface HeroSectionProps {
@@ -171,13 +175,23 @@ export default function HeroSection({ sectionConfig }: HeroSectionProps) {
           className="mt-16 flex flex-col sm:flex-row items-center justify-center gap-8 text-sm text-slate-500"
         >
           <div className="flex items-center gap-2">
-            <div className="flex -space-x-2">
-              {['#4F46E5', '#0EA5E9', '#D4AF37', '#EC4899'].map((color, i) => (
+            <div className="flex -space-x-3">
+              {[
+                config.socialAvatar1 || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=80&h=80',
+                config.socialAvatar2 || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=80&h=80',
+                config.socialAvatar3 || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=80&h=80',
+                config.socialAvatar4 || 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&q=80&w=80&h=80',
+              ].map((src, i) => (
                 <div
                   key={i}
-                  className="w-8 h-8 rounded-full border-2 border-background-dark"
-                  style={{ backgroundColor: color }}
-                />
+                  className="w-9 h-9 rounded-full border-2 border-background-dark overflow-hidden flex-shrink-0"
+                >
+                  <img
+                    src={src}
+                    alt={`Cliente ${i + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               ))}
             </div>
             <span>{config.socialClients}</span>
