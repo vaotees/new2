@@ -10,6 +10,7 @@ export default function ContactForm() {
     whatsapp: '',
     location: '',
     service: '',
+    message: '',
   });
 
   const services = [
@@ -20,6 +21,27 @@ export default function ContactForm() {
     'Landing Pages de Alta Conversão',
     'Gestão de Redes Sociais Premium',
   ];
+
+  const locations = [
+    'Acre, AC', 'Alagoas, AL', 'Amapá, AP', 'Amazonas, AM', 'Bahia, BA', 'Ceará, CE', 'Distrito Federal, DF', 
+    'Espírito Santo, ES', 'Goiás, GO', 'Maranhão, MA', 'Mato Grosso, MT', 'Mato Grosso do Sul, MS', 
+    'Minas Gerais, MG', 'Pará, PA', 'Paraíba, PB', 'Paraná, PR', 'Pernambuco, PE', 'Piauí, PI', 
+    'Rio de Janeiro, RJ', 'Rio Grande do Norte, RN', 'Rio Grande do Sul, RS', 'Rondônia, RO', 
+    'Roraima, RR', 'Santa Catarina, SC', 'São Paulo, SP', 'Sergipe, SE', 'Tocantins, TO',
+    'São Paulo (Capital)', 'Rio de Janeiro (Capital)', 'Belo Horizonte, MG', 'Curitiba, PR', 'Porto Alegre, RS'
+  ];
+
+  const formatWhatsApp = (value: string) => {
+    const cleaned = value.replace(/\D/g, '');
+    const match = cleaned.match(/^(\d{0,2})(\d{0,5})(\d{0,4})$/);
+    if (!match) return value;
+    let formatted = '';
+    if (match[1]) formatted += `(${match[1]}`;
+    if (match[1].length === 2) formatted += ') ';
+    if (match[2]) formatted += match[2];
+    if (match[3]) formatted += `-${match[3]}`;
+    return formatted;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +56,7 @@ export default function ContactForm() {
 
       if (response.ok) {
         setStatus('success');
-        setFormData({ name: '', email: '', whatsapp: '', location: '', service: '' });
+        setFormData({ name: '', email: '', whatsapp: '', location: '', service: '', message: '' });
       } else {
         setStatus('error');
       }
@@ -43,17 +65,22 @@ export default function ContactForm() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    if (name === 'whatsapp') {
+      setFormData((prev) => ({ ...prev, [name]: formatWhatsApp(value) }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   return (
     <div className="glass-panel p-8 md:p-12 text-left w-full mx-auto shadow-2xl relative overflow-hidden">
       {status === 'success' ? (
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="flex flex-col items-center justify-center py-10 text-center"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex flex-col items-center justify-center py-10 text-center"
         >
           <CheckCircle2 size={64} className="text-orange mb-6" />
           <h3 className="text-3xl font-bold text-white mb-3">Mensagem Enviada!</h3>
@@ -61,8 +88,8 @@ export default function ContactForm() {
             Agradecemos o contato. Nossa equipe especialista entrará em contato com você em breve.
           </p>
           <button
-            onClick={() => setStatus('idle')}
-            className="mt-8 text-orange hover:text-white transition-colors underline underline-offset-4 text-sm font-semibold"
+              onClick={() => setStatus('idle')}
+              className="mt-8 text-orange hover:text-white transition-colors underline underline-offset-4 text-sm font-semibold"
           >
             Enviar outra mensagem
           </button>
@@ -73,96 +100,117 @@ export default function ContactForm() {
             <div className="flex flex-col gap-2">
               <label htmlFor="name" className="text-xs font-bold uppercase tracking-widest text-slate-400">Nome Completo</label>
               <input
-                id="name"
-                name="name"
-                type="text"
-                required
-                value={formData.name}
-                onChange={handleChange}
-                className="bg-background-navy border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all"
-                placeholder="Ex: João da Silva"
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="bg-background-navy border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all"
+                  placeholder="Ex: João da Silva"
               />
             </div>
             
             <div className="flex flex-col gap-2">
               <label htmlFor="email" className="text-xs font-bold uppercase tracking-widest text-slate-400">E-mail</label>
               <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                className="bg-background-navy border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all"
-                placeholder="Ex: joao@empresa.com"
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="bg-background-navy border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all"
+                  placeholder="Ex: joao@empresa.com"
               />
             </div>
 
             <div className="flex flex-col gap-2">
               <label htmlFor="whatsapp" className="text-xs font-bold uppercase tracking-widest text-slate-400">WhatsApp</label>
               <input
-                id="whatsapp"
-                name="whatsapp"
-                type="tel"
-                required
-                value={formData.whatsapp}
-                onChange={handleChange}
-                className="bg-background-navy border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all"
-                placeholder="Ex: (11) 99999-9999"
+                  id="whatsapp"
+                  name="whatsapp"
+                  type="tel"
+                  required
+                  value={formData.whatsapp}
+                  onChange={handleChange}
+                  className="bg-background-navy border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all"
+                  placeholder="Ex: (11) 99999-9999"
+                  maxLength={15}
               />
             </div>
 
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 relative">
               <label htmlFor="location" className="text-xs font-bold uppercase tracking-widest text-slate-400">Localidade</label>
               <input
-                id="location"
-                name="location"
-                type="text"
-                required
-                value={formData.location}
-                onChange={handleChange}
-                className="bg-background-navy border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all"
-                placeholder="Ex: São Paulo, SP"
+                  id="location"
+                  name="location"
+                  type="text"
+                  required
+                  list="location-list"
+                  value={formData.location}
+                  onChange={handleChange}
+                  className="bg-background-navy border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all"
+                  placeholder="Ex: São Paulo, SP"
+                  autoComplete="off"
               />
+              <datalist id="location-list">
+                {locations.map((loc) => (
+                  <option key={loc} value={loc} />
+                ))}
+              </datalist>
             </div>
           </div>
 
           <div className="flex flex-col gap-2">
             <label htmlFor="service" className="text-xs font-bold uppercase tracking-widest text-slate-400">Qual serviço você deseja?</label>
             <select
-              id="service"
-              name="service"
-              required
-              value={formData.service}
-              onChange={handleChange}
-              className="bg-background-navy border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all appearance-none"
+                id="service"
+                name="service"
+                required
+                value={formData.service}
+                onChange={handleChange}
+                className="bg-background-navy border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all appearance-none"
             >
               <option value="" disabled>Selecione uma opção...</option>
               {services.map((srv) => (
-                <option key={srv} value={srv}>{srv}</option>
+                  <option key={srv} value={srv}>{srv}</option>
               ))}
             </select>
           </div>
 
+          <div className="flex flex-col gap-2">
+            <label htmlFor="message" className="text-xs font-bold uppercase tracking-widest text-slate-400">Mensagem ou detalhes do projeto (Opcional)</label>
+            <textarea
+                id="message"
+                name="message"
+                rows={4}
+                value={formData.message}
+                onChange={handleChange}
+                className="bg-background-navy border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all resize-none"
+                placeholder="Conte-nos um pouco sobre sua necessidade..."
+            />
+          </div>
+
           {status === 'error' && (
-            <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500 text-sm font-medium">
-              Ocorreu um erro ao enviar sua mensagem. Tente novamente ou nos chame no WhatsApp.
-            </div>
+              <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500 text-sm font-medium">
+                Ocorreu um erro ao enviar sua mensagem. Tente novamente ou nos chame no WhatsApp.
+              </div>
           )}
 
           <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            disabled={status === 'loading'}
-            type="submit"
-            className="mt-4 btn-orange w-full py-4 text-lg font-bold flex items-center justify-center gap-2"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              disabled={status === 'loading'}
+              type="submit"
+              className="mt-4 btn-orange w-full py-4 text-lg font-bold flex items-center justify-center gap-2"
           >
             {status === 'loading' ? (
-              <div className="w-6 h-6 rounded-full border-2 border-background-dark border-t-transparent animate-spin" />
+                <div className="w-6 h-6 rounded-full border-2 border-background-dark border-t-transparent animate-spin" />
             ) : (
-              <>
-                Enviar Solicitação <Send size={18} />
-              </>
+                <>
+                  Enviar Solicitação <Send size={18} />
+                </>
             )}
           </motion.button>
         </form>
@@ -170,3 +218,4 @@ export default function ContactForm() {
     </div>
   );
 }
+

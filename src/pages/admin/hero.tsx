@@ -28,7 +28,7 @@ const defaultConfig: HeroConfig = {
   ctaPrimaryText: "Quero minha Autoridade Digital",
   ctaPrimaryUrl: "#contact",
   ctaSecondaryText: "Ver nossos casos",
-  ctaSecondaryUrl: "#services",
+  ctaSecondaryUrl: "#testimonials",
   socialClients: "+127 clientes",
   socialRating: "4.9 / 5.0",
   socialRevenue: "R$12M+ em resultados gerados",

@@ -6,31 +6,24 @@ import ContactForm from './ContactForm'
 
 const footerLinks = {
   Serviços: [
-    'Branding Estratégico',
-    'Desenvolvimento Web',
-    'SEO & Performance',
-    'Tráfego Pago',
-    'Social Media',
-    'Analytics & BI',
+    'Websites de Alta Performance',
+    'Design Gráfico & Posicionamento',
+    'Automatização de Atendimento com IA (WhatsApp)',
+    'Tráfego Pago (Google Ads & Redes Sociais)',
+    'Landing Pages de Alta Conversão',
+    'Gestão de Redes Sociais Premium',
   ],
   Empresa: [
     'Sobre Nós',
+    'Serviços',
     'Cases de Sucesso',
-    'Blog',
-    'Carreiras',
-    'Parceiros',
+    'Contato',
   ],
   Contato: [
-    'contato@emsolucoesdigitais.com.br',
-    '+55 11 9 9999-8888',
-    'São Paulo, SP — Brasil',
+    { text: 'contato@emsolucoesdigitais.com.br', href: 'mailto:contato@emsolucoesdigitais.com.br', icon: <Mail size={13} className="text-orange shrink-0 mt-0.5" /> },
+    { text: '(61) 99566-4986', href: 'https://wa.me/5561995664986', icon: <Phone size={13} className="text-orange shrink-0 mt-0.5" /> },
+    { text: 'Brasília, DF — Brasil', icon: <MapPin size={13} className="text-orange shrink-0 mt-0.5" /> },
   ],
-}
-
-const contactIcons: Record<string, React.ReactNode> = {
-  'contato@emsolucoesdigitais.com.br': <Mail size={13} className="text-orange shrink-0 mt-0.5" />,
-  '+55 11 9 9999-8888': <Phone size={13} className="text-orange shrink-0 mt-0.5" />,
-  'São Paulo, SP — Brasil': <MapPin size={13} className="text-orange shrink-0 mt-0.5" />,
 }
 
 export interface FooterProps {
@@ -119,23 +112,40 @@ export default function Footer({
               <div key={category}>
                 <h4 className="text-white font-semibold text-sm mb-5">{category}</h4>
                 <ul className="space-y-3">
-                  {links.map((link) => (
-                    <li key={link}>
-                      {contactIcons[link] ? (
-                        <span className="flex items-start gap-2 text-slate-500 text-sm">
-                          {contactIcons[link]}
-                          {link}
-                        </span>
-                      ) : (
+                  {links.map((link, idx) => {
+                    if (typeof link === 'object') {
+                      return (
+                        <li key={idx}>
+                          {link.href ? (
+                            <a 
+                              href={link.href} 
+                              target={link.href.startsWith('http') ? '_blank' : undefined}
+                              rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                              className="flex items-start gap-2 text-slate-500 hover:text-slate-300 text-sm transition-colors duration-200"
+                            >
+                              {link.icon}
+                              {link.text}
+                            </a>
+                          ) : (
+                            <span className="flex items-start gap-2 text-slate-500 text-sm">
+                              {link.icon}
+                              {link.text}
+                            </span>
+                          )}
+                        </li>
+                      );
+                    }
+                    return (
+                      <li key={link}>
                         <a
                           href="#"
                           className="text-slate-500 hover:text-slate-300 text-sm transition-colors duration-200"
                         >
                           {link}
                         </a>
-                      )}
-                    </li>
-                  ))}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             ))}

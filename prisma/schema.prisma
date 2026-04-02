@@ -106,7 +106,7 @@ model SectionHeroConfig {
   ctaPrimaryText  String   @default("Quero minha Autoridade Digital")
   ctaPrimaryUrl   String   @default("#contact")
   ctaSecondaryText String  @default("Ver nossos casos")
-  ctaSecondaryUrl String   @default("#services")
+  ctaSecondaryUrl String   @default("#testimonials")
   socialClients   String   @default("+127 clientes")
   socialRating    String   @default("4.9 / 5.0")
   socialRevenue   String   @default("R$12M+ em resultados gerados")

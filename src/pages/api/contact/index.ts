@@ -10,7 +10,7 @@ export default async function handler(
     return res.status(405).json({ message: `Método ${req.method} não permitido` });
   }
 
-  const { name, email, whatsapp, location, service } = req.body;
+  const { name, email, whatsapp, location, service, message } = req.body;
 
   if (!name || !email || !whatsapp || !location || !service) {
     return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
@@ -37,6 +37,7 @@ E-mail: ${email}
 WhatsApp: ${whatsapp}
 Localidade: ${location}
 Serviço Desejado: ${service}
+Mensagem: ${message || 'Não informada'}
 
 --- 
 Enviado pela Landing Page EM Soluções Digitais`,
