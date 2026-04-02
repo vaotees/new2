@@ -8,15 +8,23 @@ interface Feature {
   icon: string
 }
 
+interface Testimonial {
+  id: string
+}
+
 export default function AdminDashboard() {
   const [features, setFeatures] = useState<Feature[]>([])
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch("/api/features")
-      .then((res) => res.json())
-      .then((data) => {
-        setFeatures(Array.isArray(data) ? data : [])
+    Promise.all([
+      fetch("/api/features").then(r => r.json()),
+      fetch("/api/testimonials").then(r => r.json())
+    ])
+      .then(([featData, testData]) => {
+        setFeatures(Array.isArray(featData) ? featData : [])
+        setTestimonials(Array.isArray(testData) ? testData : [])
         setLoading(false)
       })
       .catch(() => setLoading(false))
@@ -36,6 +44,10 @@ export default function AdminDashboard() {
           <div className="bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm">
             <h3 className="text-white/60 mb-2 font-medium">Serviços Cadastrados</h3>
             <p className="text-4xl font-bold text-white">{features.length}</p>
+          </div>
+          <div className="bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm">
+            <h3 className="text-white/60 mb-2 font-medium">Depoimentos</h3>
+            <p className="text-4xl font-bold text-white">{testimonials.length}</p>
           </div>
         </section>
 

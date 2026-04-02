@@ -75,3 +75,23 @@ model SectionFeaturesConfig {
   description    String   @default("Uma suite completa de serviços integrados, construída para marcas que não aceitam mediocridade.")
   updatedAt      DateTime @updatedAt
 }
+
+model Testimonial {
+  id          String   @id @default(cuid())
+  authorName  String
+  authorRole  String
+  content     String
+  rating      Int      @default(5)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SectionTestimonialsConfig {
+  id             String   @id @default("singleton")
+  tagline        String   @default("DEPOIMENTOS")
+  title1         String   @default("O que nossos clientes ")
+  titleHighlight String   @default("dizem sobre nós")
+  description    String   @default("Resultados reais de marcas que escolheram a autoridade digital.")
+  updatedAt      DateTime @updatedAt
+}

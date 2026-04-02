@@ -42,6 +42,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <a href="/admin/features" className="block text-white/70 hover:text-white transition-colors">
             Serviços
           </a>
+          <a href="/admin/testimonials" className="block text-white/70 hover:text-white transition-colors">
+            Depoimentos
+          </a>
         </nav>
         <button
           onClick={() => {

@@ -3,10 +3,25 @@
 import { motion } from 'framer-motion'
 import { TestimonialCard } from './TestimonialCard'
 
-const testimonials = [
+export interface CMSTestimonial {
+  id: string
+  authorName: string
+  authorRole: string
+  content: string
+  rating: number
+}
+
+export interface SectionTestimonialsConfig {
+  tagline: string
+  title1: string
+  titleHighlight: string
+  description: string
+}
+
+const staticTestimonials = [
   {
     quote:
-      'A AURÁ transformou completamente a presença digital da nossa empresa. Em 6 meses triplicamos o tráfego orgânico e duplicamos as conversões. Um trabalho impecável.',
+      'A agência transformou completamente a nossa presença digital. Em 6 meses triplicamos o tráfego orgânico e duplicamos as conversões. Um trabalho impecável.',
     name: 'Rafael Mendes',
     role: 'CEO, Mendes Investimentos',
     stars: 5,
@@ -24,7 +39,7 @@ const testimonials = [
   },
   {
     quote:
-      'Escolher a AURÁ foi a melhor decisão estratégica que tomei. As campanhas de tráfego pago geraram um ROI de 380% em 90 dias. Resultado real, não promessa vazia.',
+      'Escolher vocês foi a melhor decisão estratégica que tomei. As campanhas de tráfego pago geraram um ROI de 380% em 90 dias. Resultado real, não promessa vazia.',
     name: 'Marcos Oliveira',
     role: 'Fundador, MO Consultoria',
     stars: 5,
@@ -38,7 +53,34 @@ const containerVariants = {
   visible: { transition: { staggerChildren: 0.15 } },
 }
 
-export default function Testimonials() {
+const COLORS = ['#4F46E5', '#0EA5E9', '#D4AF37', '#E11D48', '#10B981', '#8B5CF6']
+
+interface TestimonialsProps {
+  cmsTestimonials?: CMSTestimonial[]
+  sectionConfig?: SectionTestimonialsConfig | null
+}
+
+export default function Testimonials({ cmsTestimonials, sectionConfig }: TestimonialsProps) {
+  const hasCmsData = cmsTestimonials && cmsTestimonials.length > 0
+  
+  const itemsToRender = hasCmsData 
+    ? cmsTestimonials.map((t, index) => ({
+        quote: t.content,
+        name: t.authorName,
+        role: t.authorRole,
+        stars: t.rating,
+        color: COLORS[index % COLORS.length],
+        initials: t.authorName.substring(0, 2).toUpperCase()
+      }))
+    : staticTestimonials
+
+  const config = sectionConfig || {
+    tagline: "DEPOIMENTOS",
+    title1: "O que nossos clientes ",
+    titleHighlight: "dizem sobre nós",
+    description: "Resultados reais de marcas que escolheram a autoridade digital."
+  }
+
   return (
     <section id="testimonials" className="py-24 relative">
       <div
@@ -59,14 +101,14 @@ export default function Testimonials() {
           className="text-center mb-16"
         >
           <span className="inline-block text-xs font-bold uppercase tracking-[0.25em] text-orange mb-4">
-            Depoimentos
+            {config.tagline || "DEPOIMENTOS"}
           </span>
           <h2 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
-            O que nossos clientes{' '}
-            <span className="text-orange-gradient">dizem sobre nós</span>
+            {config.title1 || "O que nossos clientes "}{' '}
+            <span className="text-orange-gradient">{config.titleHighlight || "dizem sobre nós"}</span>
           </h2>
-          <p className="text-slate-400 text-lg max-w-xl mx-auto">
-            Resultados reais de marcas que escolheram a autoridade digital.
+          <p className="text-slate-400 text-lg max-w-xl mx-auto whitespace-pre-wrap">
+            {config.description || "Resultados reais de marcas que escolheram a autoridade digital."}
           </p>
         </motion.div>
 
@@ -78,8 +120,8 @@ export default function Testimonials() {
           viewport={{ once: true, margin: '-80px' }}
           className="grid grid-cols-1 md:grid-cols-3 gap-6"
         >
-          {testimonials.map((t) => (
-            <TestimonialCard key={t.name} {...t} />
+          {itemsToRender.map((t, idx) => (
+            <TestimonialCard key={idx} {...t} />
           ))}
         </motion.div>
       </div>
