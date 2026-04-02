@@ -1,6 +1,6 @@
 import AdminLayout from "../../components/AdminLayout"
 import { useState, useEffect, useRef } from "react"
-import { Plus, Pencil, Trash2, X, Check, Loader2, LayoutGrid, ChevronUp, ChevronDown } from "lucide-react"
+import { Plus, Pencil, Trash2, X, Check, Loader2, LayoutGrid, ChevronUp, ChevronDown, Save } from "lucide-react"
 import * as LucideIcons from "lucide-react"
 
 interface Feature {
@@ -11,6 +11,13 @@ interface Feature {
   highlight: boolean
   order?: number
   createdAt?: string
+}
+
+interface SectionConfig {
+  tagline: string
+  title1: string
+  titleHighlight: string
+  description: string
 }
 
 const ICON_OPTIONS = [
@@ -33,6 +40,12 @@ export default function AdminFeatures() {
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState<string | null>(null)
 
+  // config state
+  const [config, setConfig] = useState<SectionConfig>({
+    tagline: "", title1: "", titleHighlight: "", description: ""
+  })
+  const [savingConfig, setSavingConfig] = useState(false)
+
   // modal / form state
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -42,16 +55,44 @@ export default function AdminFeatures() {
 
   const load = () => {
     setLoading(true)
-    fetch("/api/features")
-      .then((r) => r.json())
-      .then((d) => setFeatures(Array.isArray(d) ? d : []))
-      .finally(() => setLoading(false))
+    Promise.all([
+      fetch("/api/features").then(r => r.json()),
+      fetch("/api/features/config").then(r => r.json())
+    ])
+    .then(([featData, configData]) => {
+      setFeatures(Array.isArray(featData) ? featData : [])
+      if (configData && !configData.error) {
+        setConfig({
+          tagline: configData.tagline,
+          title1: configData.title1,
+          titleHighlight: configData.titleHighlight,
+          description: configData.description
+        })
+      }
+    })
+    .finally(() => setLoading(false))
   }
 
   useEffect(() => { load() }, [])
   useEffect(() => {
     if (showForm) setTimeout(() => titleRef.current?.focus(), 50)
   }, [showForm])
+
+  const handleSaveConfig = async () => {
+    setSavingConfig(true)
+    try {
+      await fetch("/api/features/config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(config),
+      })
+      alert("Textos atualizados!")
+    } catch {
+      alert("Erro ao atualizar textos.")
+    } finally {
+      setSavingConfig(false)
+    }
+  }
 
   const moveFeature = async (index: number, direction: 'up' | 'down') => {
     const newFeatures = [...features]
@@ -135,88 +176,145 @@ export default function AdminFeatures() {
 
   return (
     <AdminLayout>
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-1">Features</h1>
-            <p className="text-white/50">Gerencie os itens exibidos na seção de features do site. Altere a ordem usando as setas para cima ou para baixo.</p>
+      <div className="max-w-4xl mx-auto space-y-12">
+        {/* Header Configuration */}
+        <div>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-3xl font-bold text-white mb-1">Textos da Seção</h1>
+              <p className="text-white/50">Edite as manchetes e descrições do cabeçalho de Serviços.</p>
+            </div>
+            <button
+              onClick={handleSaveConfig}
+              disabled={savingConfig || loading}
+              className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-5 py-3 rounded-xl font-medium transition-all"
+            >
+              {savingConfig ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              Salvar Textos
+            </button>
           </div>
-          <button
-            onClick={openCreate}
-            className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-5 py-3 rounded-xl font-medium transition-all shadow-lg shadow-blue-500/20"
-          >
-            <Plus className="w-4 h-4" />
-            Nova Feature
-          </button>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white/5 border border-white/10 p-6 rounded-2xl">
+            <div className="md:col-span-2">
+              <label className="block text-sm text-white/60 mb-1.5">Tagline (Laranja)</label>
+              <input
+                type="text"
+                value={config.tagline}
+                onChange={e => setConfig({...config, tagline: e.target.value})}
+                className="w-full bg-[#111] border border-white/10 text-white rounded-xl px-4 py-2 outline-none focus:border-blue-500/50"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-white/60 mb-1.5">Título Branco</label>
+              <input
+                type="text"
+                value={config.title1}
+                onChange={e => setConfig({...config, title1: e.target.value})}
+                className="w-full bg-[#111] border border-white/10 text-white rounded-xl px-4 py-2 outline-none focus:border-blue-500/50"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-white/60 mb-1.5">Título Laranja (Final)</label>
+              <input
+                type="text"
+                value={config.titleHighlight}
+                onChange={e => setConfig({...config, titleHighlight: e.target.value})}
+                className="w-full bg-[#111] border border-white/10 text-white rounded-xl px-4 py-2 outline-none focus:border-blue-500/50"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm text-white/60 mb-1.5">Descrição/Subtítulo</label>
+              <textarea
+                value={config.description}
+                onChange={e => setConfig({...config, description: e.target.value})}
+                className="w-full bg-[#111] border border-white/10 text-white rounded-xl px-4 py-2 outline-none focus:border-blue-500/50 resize-none h-20"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Feature List */}
-        {loading ? (
-          <div className="flex items-center justify-center py-20 text-white/40">
-            <Loader2 className="w-8 h-8 animate-spin mr-3" />
-            Carregando...
+        <div>
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-white mb-1">Itens de Serviços</h1>
+              <p className="text-white/50">Gerencie e ordene os cartões exibidos no site.</p>
+            </div>
+            <button
+              onClick={openCreate}
+              className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-5 py-3 rounded-xl font-medium transition-all shadow-lg shadow-blue-500/20"
+            >
+              <Plus className="w-4 h-4" />
+              Nova Feature
+            </button>
           </div>
-        ) : features.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-white/40 border border-dashed border-white/20 rounded-2xl">
-            <LayoutGrid className="w-12 h-12 mb-4 opacity-50" />
-            <p className="font-medium">Nenhuma feature cadastrada</p>
-            <p className="text-sm mt-1">Clique em "Nova Feature" para começar.</p>
-          </div>
-        ) : (
-          <div className="grid gap-4">
-            {features.map((feature, idx) => {
-              const IconComp = (LucideIcons as any)[feature.icon] || LucideIcons.Check
-              return (
-                <div
-                  key={feature.id}
-                  className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-center gap-4 hover:bg-white/8 transition-colors group relative"
-                >
-                  <div className="flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button disabled={idx === 0} onClick={() => moveFeature(idx, 'up')} className="text-white/40 hover:text-white disabled:opacity-20" title="Mover para cima"><ChevronUp size={16} /></button>
-                    <button disabled={idx === features.length - 1} onClick={() => moveFeature(idx, 'down')} className="text-white/40 hover:text-white disabled:opacity-20" title="Mover para baixo"><ChevronDown size={16} /></button>
+
+          {loading ? (
+            <div className="flex items-center justify-center py-20 text-white/40">
+              <Loader2 className="w-8 h-8 animate-spin mr-3" />
+              Carregando...
+            </div>
+          ) : features.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 text-white/40 border border-dashed border-white/20 rounded-2xl">
+              <LayoutGrid className="w-12 h-12 mb-4 opacity-50" />
+              <p className="font-medium">Nenhuma feature cadastrada</p>
+              <p className="text-sm mt-1">Clique em "Nova Feature" para começar.</p>
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {features.map((feature, idx) => {
+                const IconComp = (LucideIcons as any)[feature.icon] || LucideIcons.Check
+                return (
+                  <div
+                    key={feature.id}
+                    className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-center gap-4 hover:bg-white/8 transition-colors group relative"
+                  >
+                    <div className="flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button disabled={idx === 0} onClick={() => moveFeature(idx, 'up')} className="text-white/40 hover:text-white disabled:opacity-20" title="Mover para cima"><ChevronUp size={16} /></button>
+                      <button disabled={idx === features.length - 1} onClick={() => moveFeature(idx, 'down')} className="text-white/40 hover:text-white disabled:opacity-20" title="Mover para baixo"><ChevronDown size={16} /></button>
+                    </div>
+                    
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-emerald-500/20 border border-white/10 flex items-center justify-center text-blue-400 flex-shrink-0">
+                      <IconComp className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-white truncate flex items-center gap-3">
+                        {feature.title}
+                        {feature.highlight && (
+                          <span className="bg-[#F97316] text-black text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+                            Popular
+                          </span>
+                        )}
+                      </h3>
+                      <p className="text-white/50 text-sm mt-0.5 line-clamp-2">{feature.description}</p>
+                    </div>
+                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                      <button
+                        onClick={() => openEdit(feature)}
+                        className="p-2 rounded-lg text-white/60 hover:text-blue-400 hover:bg-blue-500/10 transition-all"
+                        title="Editar"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(feature.id)}
+                        disabled={deleting === feature.id}
+                        className="p-2 rounded-lg text-white/60 hover:text-red-400 hover:bg-red-500/10 transition-all disabled:opacity-50"
+                        title="Excluir"
+                      >
+                        {deleting === feature.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
                   </div>
-                  
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-emerald-500/20 border border-white/10 flex items-center justify-center text-blue-400 flex-shrink-0">
-                    <IconComp className="w-5 h-5" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-white truncate flex items-center gap-3">
-                      {feature.title}
-                      {feature.highlight && (
-                        <span className="bg-[#F97316] text-black text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
-                          Popular
-                        </span>
-                      )}
-                    </h3>
-                    <p className="text-white/50 text-sm mt-0.5 line-clamp-2">{feature.description}</p>
-                  </div>
-                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-                    <button
-                      onClick={() => openEdit(feature)}
-                      className="p-2 rounded-lg text-white/60 hover:text-blue-400 hover:bg-blue-500/10 transition-all"
-                      title="Editar"
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(feature.id)}
-                      disabled={deleting === feature.id}
-                      className="p-2 rounded-lg text-white/60 hover:text-red-400 hover:bg-red-500/10 transition-all disabled:opacity-50"
-                      title="Excluir"
-                    >
-                      {deleting === feature.id ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Trash2 className="w-4 h-4" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
+                )
+              })}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Modal / Form */}

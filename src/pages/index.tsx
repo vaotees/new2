@@ -11,13 +11,22 @@ interface Feature {
   title: string
   description: string
   icon: string
+  highlight?: boolean
+}
+
+interface SectionConfig {
+  tagline: string
+  title1: string
+  titleHighlight: string
+  description: string
 }
 
 interface HomeProps {
   features: Feature[]
+  sectionConfig: SectionConfig | null
 }
 
-export default function Home({ features }: HomeProps) {
+export default function Home({ features, sectionConfig }: HomeProps) {
   return (
     <>
       <Head>
@@ -25,8 +34,7 @@ export default function Home({ features }: HomeProps) {
       </Head>
       <main className="bg-background-dark min-h-screen">
         <Navbar />
-        <HeroSection />
-        <FeaturesGrid cmsFeatures={features} />
+        <FeaturesGrid cmsFeatures={features} sectionConfig={sectionConfig} />
         <Testimonials />
         <Footer />
       </main>
@@ -36,14 +44,25 @@ export default function Home({ features }: HomeProps) {
 
 export const getServerSideProps: GetServerSideProps<HomeProps> = async ({ req }) => {
   try {
-    // Use internal API call — works reliably with Next.js 12 SSR
     const proto = req.headers['x-forwarded-proto'] || 'http'
     const host = req.headers.host || 'localhost:3000'
-    const res = await fetch(`${proto}://${host}/api/features`)
-    if (!res.ok) return { props: { features: [] } }
-    const features: Feature[] = await res.json()
-    return { props: { features: Array.isArray(features) ? features : [] } }
+    const baseUrl = `${proto}://${host}`
+
+    const [featuresRes, configRes] = await Promise.all([
+      fetch(`${baseUrl}/api/features`),
+      fetch(`${baseUrl}/api/features/config`)
+    ])
+
+    const features = featuresRes.ok ? await featuresRes.json() : []
+    const sectionConfig = configRes.ok ? await configRes.json() : null
+
+    return { 
+      props: { 
+        features: Array.isArray(features) ? features : [],
+        sectionConfig: sectionConfig && !sectionConfig.error ? sectionConfig : null
+      } 
+    }
   } catch {
-    return { props: { features: [] } }
+    return { props: { features: [], sectionConfig: null } }
   }
 }

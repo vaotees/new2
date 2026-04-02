@@ -66,3 +66,12 @@ model Feature {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+model SectionFeaturesConfig {
+  id             String   @id @default("singleton")
+  tagline        String   @default("NOSSOS SERVIÇOS")
+  title1         String   @default("Tudo que você precisa para se tornar ")
+  titleHighlight String   @default("referência no digital")
+  description    String   @default("Uma suite completa de serviços integrados, construída para marcas que não aceitam mediocridade.")
+  updatedAt      DateTime @updatedAt
+}
