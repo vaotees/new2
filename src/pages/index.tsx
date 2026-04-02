@@ -34,6 +34,7 @@ export default function Home({ features, sectionConfig }: HomeProps) {
       </Head>
       <main className="bg-background-dark min-h-screen">
         <Navbar />
+        <HeroSection />
         <FeaturesGrid cmsFeatures={features} sectionConfig={sectionConfig} />
         <Testimonials />
         <Footer />
