@@ -21,7 +21,7 @@ export default function Home({ features }: HomeProps) {
   return (
     <>
       <Head>
-        <title>Agência Digital Premium | Autoridade Digital</title>
+        <title>EM Soluções Digitais | Agência Digital Premium</title>
       </Head>
       <main className="bg-background-dark min-h-screen">
         <Navbar />

@@ -88,7 +88,7 @@ export default function Footer({
                 <Logo className="h-14 w-auto drop-shadow-md" />
               </div>
               <p className="text-slate-500 text-sm leading-relaxed mb-6">
-                Agência digital premium especializada em transformar marcas em referências de mercado.
+                EM Soluções Digitais. Agência especializada em transformar marcas em referências de mercado.
               </p>
               <div className="flex gap-3">
                 <a

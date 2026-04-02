@@ -68,7 +68,7 @@ export default function HeroSection() {
         >
           <Star size={12} className="text-orange fill-orange" />
           <span className="text-xs font-semibold text-orange uppercase tracking-widest">
-            Agência Digital Premium
+            EM Soluções Digitais
           </span>
           <Star size={12} className="text-orange fill-orange" />
         </motion.div>
