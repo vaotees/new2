@@ -40,9 +40,18 @@ export default function Navbar({
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          {/* Logo */}
-          <a href="#" className="flex items-center gap-2 group">
-            <Logo className="h-11 w-auto drop-shadow-md transition-transform group-hover:scale-105" />
+          {/* Logo Container with custom blur */}
+          <a 
+            href="#" 
+            className="flex items-center gap-2 group px-4 py-2 rounded-2xl transition-all duration-300"
+            style={{ 
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.1)'
+            }}
+          >
+            <Logo className="h-9 w-auto drop-shadow-md transition-transform group-hover:scale-105" />
           </a>
 
           {/* Desktop Nav */}
