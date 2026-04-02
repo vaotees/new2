@@ -6,22 +6,15 @@ import {
   Check, Star, Zap, Globe, Shield, Rocket, Cpu, Users,
   BarChart2, Award, Lightbulb, Lock, Layers, LucideIcon
 } from 'lucide-react'
+import * as LucideIcons from 'lucide-react'
 import { FeatureCard } from './FeatureCard'
 
-// Map from icon name string (stored in DB) → Lucide component
-const ICON_MAP: Record<string, LucideIcon> = {
-  Check, Star, Zap, Globe, Shield, Rocket, Code2, Cpu,
-  Users, BarChart2, Award, Target, Lightbulb, Lock, Layers,
-  Palette, TrendingUp, Share2, BarChart3,
-  // aliases used by Bolt/Bol abbreviation in the icon picker
-  Bolt: Zap,
-}
-
-interface CMSFeature {
+export interface CMSFeature {
   id: string
   title: string
   description: string
   icon: string
+  highlight?: boolean
 }
 
 interface StaticService {
@@ -70,17 +63,13 @@ const containerVariants = {
   visible: { transition: { staggerChildren: 0.1 } },
 }
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
-}
-
 interface FeaturesGridProps {
   cmsFeatures?: CMSFeature[]
 }
 
 export default function FeaturesGrid({ cmsFeatures }: FeaturesGridProps) {
   const hasCmsData = cmsFeatures && cmsFeatures.length > 0
+  const itemsToRender = hasCmsData ? cmsFeatures : staticServices
 
   return (
     <section id="services" className="py-24 relative">
@@ -122,13 +111,17 @@ export default function FeaturesGrid({ cmsFeatures }: FeaturesGridProps) {
           viewport={{ once: true, margin: '-80px' }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {staticServices.map((service) => {
+          {itemsToRender.map((service: any) => {
+            const IconComp = typeof service.icon === 'string'
+              ? (LucideIcons as any)[service.icon] || LucideIcons.Check
+              : service.icon
+
             return (
               <FeatureCard
                 key={service.title}
                 title={service.title}
                 description={service.description}
-                icon={service.icon}
+                icon={IconComp}
                 highlight={service.highlight}
               />
             )
@@ -138,3 +131,4 @@ export default function FeaturesGrid({ cmsFeatures }: FeaturesGridProps) {
     </section>
   )
 }
+

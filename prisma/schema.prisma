@@ -61,6 +61,7 @@ model Feature {
   title       String
   description String
   icon        String   @default("Check") // Lucide icon name
+  highlight   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

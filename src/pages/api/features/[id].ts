@@ -11,13 +11,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === "PUT") {
     try {
-      const { title, description, icon } = req.body
+      const { title, description, icon, highlight } = req.body
       const feature = await prisma.feature.update({
         where: { id: id as string },
-        data: { title, description, icon },
+        data: { title, description, icon, highlight: highlight || false },
       })
       return res.status(200).json(feature)
-    } catch {
+    } catch (error) {
+      console.error("ERRO AO ATUALIZAR:", error)
       return res.status(500).json({ error: "Erro ao atualizar feature" })
     }
   }

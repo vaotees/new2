@@ -23,13 +23,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === "POST") {
     try {
-      const { title, description, icon } = req.body
+      const { title, description, icon, highlight } = req.body
       
       const feature = await prisma.feature.create({
         data: {
           title,
           description,
           icon: icon || "Check",
+          highlight: highlight || false,
         },
       })
       return res.status(201).json(feature)

@@ -1,12 +1,14 @@
 import AdminLayout from "../../components/AdminLayout"
 import { useState, useEffect, useRef } from "react"
 import { Plus, Pencil, Trash2, X, Check, Loader2, LayoutGrid } from "lucide-react"
+import * as LucideIcons from "lucide-react"
 
 interface Feature {
   id: string
   title: string
   description: string
   icon: string
+  highlight: boolean
   createdAt?: string
 }
 
@@ -19,9 +21,10 @@ interface FormData {
   title: string
   description: string
   icon: string
+  highlight: boolean
 }
 
-const emptyForm: FormData = { title: "", description: "", icon: "Check" }
+const emptyForm: FormData = { title: "", description: "", icon: "Check", highlight: false }
 
 export default function AdminFeatures() {
   const [features, setFeatures] = useState<Feature[]>([])
@@ -58,7 +61,7 @@ export default function AdminFeatures() {
 
   const openEdit = (f: Feature) => {
     setEditingId(f.id)
-    setForm({ title: f.title, description: f.description, icon: f.icon })
+    setForm({ title: f.title, description: f.description, icon: f.icon, highlight: f.highlight })
     setError("")
     setShowForm(true)
   }
@@ -133,41 +136,51 @@ export default function AdminFeatures() {
           </div>
         ) : (
           <div className="grid gap-4">
-            {features.map((feature) => (
-              <div
-                key={feature.id}
-                className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-start gap-4 hover:bg-white/8 transition-colors group"
-              >
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-emerald-500/20 border border-white/10 flex items-center justify-center text-blue-400 flex-shrink-0">
-                  <span className="text-xs font-mono">{feature.icon.slice(0, 3)}</span>
+            {features.map((feature) => {
+              const IconComp = (LucideIcons as any)[feature.icon] || LucideIcons.Check
+              return (
+                <div
+                  key={feature.id}
+                  className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-start gap-4 hover:bg-white/8 transition-colors group relative"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-emerald-500/20 border border-white/10 flex items-center justify-center text-blue-400 flex-shrink-0">
+                    <IconComp className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-white truncate flex items-center gap-3">
+                      {feature.title}
+                      {feature.highlight && (
+                        <span className="bg-[#F97316] text-black text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+                          Popular
+                        </span>
+                      )}
+                    </h3>
+                    <p className="text-white/50 text-sm mt-0.5 line-clamp-2">{feature.description}</p>
+                  </div>
+                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                    <button
+                      onClick={() => openEdit(feature)}
+                      className="p-2 rounded-lg text-white/60 hover:text-blue-400 hover:bg-blue-500/10 transition-all"
+                      title="Editar"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(feature.id)}
+                      disabled={deleting === feature.id}
+                      className="p-2 rounded-lg text-white/60 hover:text-red-400 hover:bg-red-500/10 transition-all disabled:opacity-50"
+                      title="Excluir"
+                    >
+                      {deleting === feature.id ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-white truncate">{feature.title}</h3>
-                  <p className="text-white/50 text-sm mt-0.5 line-clamp-2">{feature.description}</p>
-                </div>
-                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-                  <button
-                    onClick={() => openEdit(feature)}
-                    className="p-2 rounded-lg text-white/60 hover:text-blue-400 hover:bg-blue-500/10 transition-all"
-                    title="Editar"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(feature.id)}
-                    disabled={deleting === feature.id}
-                    className="p-2 rounded-lg text-white/60 hover:text-red-400 hover:bg-red-500/10 transition-all disabled:opacity-50"
-                    title="Excluir"
-                  >
-                    {deleting === feature.id ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Trash2 className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>
@@ -224,24 +237,40 @@ export default function AdminFeatures() {
               <div>
                 <label className="block text-sm text-white/60 mb-1.5">Ícone (Lucide)</label>
                 <div className="grid grid-cols-8 gap-2 p-3 bg-white/5 border border-white/10 rounded-xl max-h-36 overflow-y-auto">
-                  {ICON_OPTIONS.map((icon) => (
-                    <button
-                      key={icon}
-                      title={icon}
-                      onClick={() => setForm({ ...form, icon })}
-                      className={`h-9 rounded-lg text-xs font-mono flex items-center justify-center transition-all ${
-                        form.icon === icon
-                          ? "bg-blue-500 text-white"
-                          : "text-white/50 hover:bg-white/10 hover:text-white"
-                      }`}
-                    >
-                      {icon.slice(0, 3)}
-                    </button>
-                  ))}
+                  {ICON_OPTIONS.map((icon) => {
+                    const DynIcon = (LucideIcons as any)[icon] || LucideIcons.Check
+                    return (
+                      <button
+                        key={icon}
+                        title={icon}
+                        onClick={() => setForm({ ...form, icon })}
+                        className={`h-9 rounded-lg text-xs flex items-center justify-center transition-all ${
+                          form.icon === icon
+                            ? "bg-blue-500 text-white"
+                            : "text-white/50 hover:bg-white/10 hover:text-white"
+                        }`}
+                      >
+                        <DynIcon className="w-5 h-5" />
+                      </button>
+                    )
+                  })}
                 </div>
                 <p className="text-white/30 text-xs mt-1.5">
                   Ícone selecionado: <span className="text-white/60">{form.icon}</span>
                 </p>
+              </div>
+
+              <div className="flex items-center gap-3 bg-white/5 p-4 rounded-xl border border-white/10 mt-2 cursor-pointer" onClick={() => setForm({ ...form, highlight: !form.highlight })}>
+                <input 
+                  type="checkbox" 
+                  checked={form.highlight} 
+                  onChange={() => {}} 
+                  className="w-5 h-5 rounded accent-[#F97316] outline-none cursor-pointer"
+                />
+                <div>
+                  <p className="text-white font-medium text-sm">Destacar como Popular</p>
+                  <p className="text-white/50 text-xs">Aplica um glow laranja e a tag POPULAR.</p>
+                </div>
               </div>
 
               {error && (
@@ -277,3 +306,4 @@ export default function AdminFeatures() {
     </AdminLayout>
   )
 }
+
