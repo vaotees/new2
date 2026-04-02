@@ -14,25 +14,25 @@ const config: Config = {
           dark: '#0A1128',
           navy: '#0F172A',
         },
-        gold: {
-          DEFAULT: '#D4AF37',
-          light: '#F5D060',
-          dark: '#A88520',
+        orange: {
+          DEFAULT: '#F97316',
+          light: '#FB923C',
+          dark: '#C2410C',
         },
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
       },
       backgroundImage: {
-        'gold-gradient': 'linear-gradient(135deg, #F5D060 0%, #D4AF37 50%, #A88520 100%)',
-        'hero-glow': 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(59,130,246,0.15) 0%, transparent 70%)',
+        'orange-gradient': 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #C2410C 100%)',
+        'hero-glow': 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(249,115,22,0.15) 0%, transparent 70%)',
       },
       animation: {
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
       boxShadow: {
-        'gold': '0 0 24px rgba(212,175,55,0.35)',
-        'gold-lg': '0 0 48px rgba(212,175,55,0.45)',
+        'orange': '0 0 24px rgba(249,115,22,0.35)',
+        'orange-lg': '0 0 48px rgba(249,115,22,0.45)',
       },
     },
   },
@@ -53,14 +53,14 @@ const config: Config = {
           border: '1px solid rgba(255, 255, 255, 0.08)',
           borderRadius: '0.75rem',
         },
-        '.text-gold-gradient': {
-          background: 'linear-gradient(135deg, #F5D060 0%, #D4AF37 50%, #A88520 100%)',
+        '.text-orange-gradient': {
+          background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #C2410C 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
         },
-        '.btn-gold': {
-          background: 'linear-gradient(135deg, #F5D060 0%, #D4AF37 50%, #A88520 100%)',
+        '.btn-orange': {
+          background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #C2410C 100%)',
           color: '#0A1128',
           fontWeight: '700',
           borderRadius: '9999px',
@@ -68,9 +68,9 @@ const config: Config = {
           alignItems: 'center',
           justifyContent: 'center',
           transition: 'all 0.2s ease',
-          boxShadow: '0 0 24px rgba(212,175,55,0.35)',
+          boxShadow: '0 0 24px rgba(249,115,22,0.35)',
           '&:hover': {
-            boxShadow: '0 0 48px rgba(212,175,55,0.55)',
+            boxShadow: '0 0 48px rgba(249,115,22,0.55)',
           },
         },
       })

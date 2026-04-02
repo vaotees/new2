@@ -1,9 +1,29 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, Play, Star } from 'lucide-react'
+import { Button } from './Button'
+
+const services = [
+  'Autoridade Digital',
+  'Websites Premium',
+  'Design & Branding',
+  'Automação com IA',
+  'Tráfego Pago',
+  'Landing Pages',
+  'Redes Sociais',
+]
 
 export default function HeroSection() {
+  const [currentService, setCurrentService] = useState(0)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentService((prev) => (prev + 1) % services.length)
+    }, 3500)
+    return () => clearInterval(timer)
+  }, [])
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background radial glow */}
@@ -11,7 +31,7 @@ export default function HeroSection() {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(59,130,246,0.12) 0%, rgba(212,175,55,0.05) 40%, transparent 70%)',
+            'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(249,115,22,0.12) 0%, rgba(15,23,42,0.05) 40%, transparent 70%)',
         }}
       />
 
@@ -29,13 +49,13 @@ export default function HeroSection() {
         animate={{ y: [0, -30, 0], opacity: [0.4, 0.7, 0.4] }}
         transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
         className="absolute top-1/4 left-1/4 w-72 h-72 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(circle, rgba(249,115,22,0.08) 0%, transparent 70%)' }}
       />
       <motion.div
         animate={{ y: [0, 25, 0], opacity: [0.3, 0.6, 0.3] }}
         transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
         className="absolute bottom-1/3 right-1/4 w-96 h-96 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(circle, rgba(15,23,42,0.08) 0%, transparent 70%)' }}
       />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 text-center pt-24">
@@ -46,11 +66,11 @@ export default function HeroSection() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="inline-flex items-center gap-2 glass-panel-sm px-4 py-2 mb-8"
         >
-          <Star size={12} className="text-gold fill-gold" />
-          <span className="text-xs font-semibold text-gold uppercase tracking-widest">
+          <Star size={12} className="text-orange fill-orange" />
+          <span className="text-xs font-semibold text-orange uppercase tracking-widest">
             Agência Digital Premium
           </span>
-          <Star size={12} className="text-gold fill-gold" />
+          <Star size={12} className="text-orange fill-orange" />
         </motion.div>
 
         {/* Headline */}
@@ -60,9 +80,21 @@ export default function HeroSection() {
           transition={{ duration: 0.8, delay: 0.3 }}
           className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[1.05] tracking-tight mb-6"
         >
-          Transformamos Marcas em{' '}
-          <span className="text-gold-gradient block md:inline">
-            Autoridades Digitais
+          Especialistas em{' '}
+          <span className="text-orange-gradient block md:inline relative h-[1.2em] inline-block overflow-hidden min-w-[300px] align-bottom">
+            <AnimatePresence mode="popLayout">
+              <motion.span
+                key={currentService}
+                initial={{ y: 50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -50, opacity: 0 }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+                className="absolute left-0 right-0"
+              >
+                {services[currentService]}
+              </motion.span>
+            </AnimatePresence>
+            <span className="invisible">{services[0]}</span> {/* Mémoria de altura */}
           </span>
         </motion.h1>
 
@@ -84,27 +116,23 @@ export default function HeroSection() {
           transition={{ duration: 0.8, delay: 0.65 }}
           className="flex flex-col sm:flex-row gap-4 justify-center items-center"
         >
-          <motion.a
+          <Button
             href="#contact"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.97 }}
-            className="btn-gold px-8 py-4 text-base font-bold flex items-center gap-2 group"
+            variant="primary"
+            icon={ArrowRight}
+            size="md"
           >
             Quero minha Autoridade Digital
-            <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
-          </motion.a>
+          </Button>
 
-          <motion.a
+          <Button
             href="#services"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className="flex items-center gap-3 px-8 py-4 rounded-full border border-white/15 text-slate-300 hover:text-white hover:border-white/30 transition-all duration-300 text-base font-medium group"
+            variant="outline"
+            icon={Play}
+            size="md"
           >
-            <span className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center group-hover:border-gold/50 transition-colors">
-              <Play size={12} fill="currentColor" />
-            </span>
             Ver nossos casos
-          </motion.a>
+          </Button>
         </motion.div>
 
         {/* Social proof */}
@@ -129,7 +157,7 @@ export default function HeroSection() {
           <div className="w-px h-4 bg-white/10 hidden sm:block" />
           <div className="flex items-center gap-1">
             {[1, 2, 3, 4, 5].map((i) => (
-              <Star key={i} size={14} className="text-gold fill-gold" />
+              <Star key={i} size={14} className="text-orange fill-orange" />
             ))}
             <span className="ml-1">4.9 / 5.0</span>
           </div>

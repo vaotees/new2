@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Star } from 'lucide-react'
+import { TestimonialCard } from './TestimonialCard'
 
 const testimonials = [
   {
@@ -38,11 +38,6 @@ const containerVariants = {
   visible: { transition: { staggerChildren: 0.15 } },
 }
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: 'easeOut' } },
-}
-
 export default function Testimonials() {
   return (
     <section id="testimonials" className="py-24 relative">
@@ -63,12 +58,12 @@ export default function Testimonials() {
           transition={{ duration: 0.7 }}
           className="text-center mb-16"
         >
-          <span className="inline-block text-xs font-bold uppercase tracking-[0.25em] text-gold mb-4">
+          <span className="inline-block text-xs font-bold uppercase tracking-[0.25em] text-orange mb-4">
             Depoimentos
           </span>
           <h2 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
             O que nossos clientes{' '}
-            <span className="text-gold-gradient">dizem sobre nós</span>
+            <span className="text-orange-gradient">dizem sobre nós</span>
           </h2>
           <p className="text-slate-400 text-lg max-w-xl mx-auto">
             Resultados reais de marcas que escolheram a autoridade digital.
@@ -84,46 +79,7 @@ export default function Testimonials() {
           className="grid grid-cols-1 md:grid-cols-3 gap-6"
         >
           {testimonials.map((t) => (
-            <motion.div
-              key={t.name}
-              variants={cardVariants}
-              whileHover={{ y: -6, transition: { duration: 0.25 } }}
-              className="glass-panel p-8 flex flex-col gap-6"
-            >
-              {/* Stars */}
-              <div className="flex gap-1">
-                {Array.from({ length: t.stars }).map((_, i) => (
-                  <Star key={i} size={14} className="text-gold fill-gold" />
-                ))}
-              </div>
-
-              {/* Quote mark */}
-              <div
-                className="text-7xl font-black leading-none -mt-2 -mb-4 select-none"
-                style={{ color: '#D4AF37', opacity: 0.6 }}
-              >
-                &ldquo;
-              </div>
-
-              {/* Quote */}
-              <p className="text-slate-300 text-sm leading-relaxed font-medium flex-1">
-                {t.quote}
-              </p>
-
-              {/* Author */}
-              <div className="flex items-center gap-3 pt-4 border-t border-white/5">
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
-                  style={{ background: `${t.color}33`, border: `1.5px solid ${t.color}55` }}
-                >
-                  {t.initials}
-                </div>
-                <div>
-                  <p className="text-white font-semibold text-sm">{t.name}</p>
-                  <p className="text-slate-500 text-xs">{t.role}</p>
-                </div>
-              </div>
-            </motion.div>
+            <TestimonialCard key={t.name} {...t} />
           ))}
         </motion.div>
       </div>

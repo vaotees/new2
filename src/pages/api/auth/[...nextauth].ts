@@ -29,6 +29,12 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
+    async signIn({ user }) {
+      if (user.email === "estevao.marques@gmail.com") {
+        return true
+      }
+      return false
+    },
     async session({ session, token }) {
       if (session.user && token.sub) {
         session.user.id = token.sub

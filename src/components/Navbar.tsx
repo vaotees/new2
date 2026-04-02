@@ -3,14 +3,23 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Zap, Menu, X, Lock } from 'lucide-react'
+import Logo from './Logo'
 
-const navLinks = [
+const defaultNavLinks = [
   { href: '#services', label: 'Serviços' },
   { href: '#testimonials', label: 'Cases' },
   { href: '#contact', label: 'Contato' },
 ]
 
-export default function Navbar() {
+export interface NavbarProps {
+  links?: { href: string; label: string }[];
+  ctaText?: string;
+}
+
+export default function Navbar({ 
+  links = defaultNavLinks, 
+  ctaText = 'Iniciar Projeto' 
+}: NavbarProps) {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -33,24 +42,19 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* Logo */}
           <a href="#" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-gold-gradient flex items-center justify-center shadow-gold">
-              <Zap size={16} className="text-background-dark" fill="currentColor" />
-            </div>
-            <span className="text-white font-bold text-xl tracking-tight">
-              AURÁ<span className="text-gold">.</span>
-            </span>
+            <Logo className="h-11 w-auto drop-shadow-md transition-transform group-hover:scale-105" />
           </a>
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
+            {links.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
                 className="text-slate-400 hover:text-white text-sm font-medium transition-colors duration-200 relative group"
               >
                 {link.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-px bg-gold transition-all duration-300 group-hover:w-full" />
+                <span className="absolute -bottom-1 left-0 w-0 h-px bg-orange transition-all duration-300 group-hover:w-full" />
               </a>
             ))}
           </div>
@@ -70,9 +74,9 @@ export default function Navbar() {
               href="#contact"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
-              className="btn-gold px-6 py-2.5 text-sm font-bold"
+              className="btn-orange px-6 py-2.5 text-sm font-bold"
             >
-              Iniciar Projeto
+              {ctaText}
             </motion.a>
           </div>
 
@@ -97,7 +101,7 @@ export default function Navbar() {
             transition={{ duration: 0.2 }}
             className="fixed top-16 left-4 right-4 z-40 glass-panel p-6 flex flex-col gap-4"
           >
-            {navLinks.map((link) => (
+            {links.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
@@ -121,9 +125,9 @@ export default function Navbar() {
                 href="#contact"
                 whileTap={{ scale: 0.97 }}
                 onClick={() => setMobileOpen(false)}
-                className="btn-gold px-6 py-3 text-sm font-bold text-center"
+                className="btn-orange px-6 py-3 text-sm font-bold text-center"
               >
-                Iniciar Projeto
+                {ctaText}
               </motion.a>
             </div>
           </motion.div>
