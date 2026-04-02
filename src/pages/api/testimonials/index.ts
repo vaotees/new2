@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === "POST") {
     try {
-      const { authorName, authorRole, content, rating } = req.body
+      const { authorName, authorRole, content, rating, avatarUrl } = req.body
       
       const count = await prisma.testimonial.count()
 
@@ -33,6 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           content,
           rating: rating || 5,
           order: count,
+          avatarUrl,
         },
       })
       return res.status(201).json(testimonial)

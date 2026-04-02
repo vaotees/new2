@@ -9,6 +9,7 @@ interface Testimonial {
   content: string
   rating: number
   order?: number
+  avatarUrl?: string | null
 }
 
 interface SectionConfig {
@@ -23,9 +24,10 @@ interface FormData {
   authorRole: string
   content: string
   rating: number
+  avatarUrl?: string | null
 }
 
-const emptyForm: FormData = { authorName: "", authorRole: "", content: "", rating: 5 }
+const emptyForm: FormData = { authorName: "", authorRole: "", content: "", rating: 5, avatarUrl: null }
 
 export default function AdminTestimonials() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
@@ -124,12 +126,28 @@ export default function AdminTestimonials() {
 
   const openEdit = (f: Testimonial) => {
     setEditingId(f.id)
-    setForm({ authorName: f.authorName, authorRole: f.authorRole, content: f.content, rating: f.rating })
+    setForm({ authorName: f.authorName, authorRole: f.authorRole, content: f.content, rating: f.rating, avatarUrl: f.avatarUrl })
     setError("")
     setShowForm(true)
   }
 
   const closeForm = () => { setShowForm(false); setError("") }
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (file.size > 500 * 1024) {
+      alert("A imagem deve ter no máximo 500KB.")
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      setForm(prev => ({ ...prev, avatarUrl: event.target?.result as string }))
+    }
+    reader.readAsDataURL(file)
+  }
 
   const handleSave = async () => {
     if (!form.authorName.trim() || !form.content.trim()) {
@@ -265,8 +283,12 @@ export default function AdminTestimonials() {
                     <button disabled={idx === testimonials.length - 1} onClick={() => moveTestimonial(idx, 'down')} className="text-white/40 hover:text-white disabled:opacity-20 flex pb-2 md:pb-0" title="Mover para baixo"><ChevronDown size={16} /></button>
                   </div>
                   
-                  <div className="w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 font-bold border border-white/10 flex items-center justify-center flex-shrink-0 uppercase">
-                    {item.authorName.slice(0, 2)}
+                  <div className="w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 font-bold border border-white/10 flex items-center justify-center flex-shrink-0 uppercase overflow-hidden">
+                    {item.avatarUrl ? (
+                      <img src={item.avatarUrl} alt={item.authorName} className="w-full h-full object-cover" />
+                    ) : (
+                      item.authorName.slice(0, 2)
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-white truncate items-center flex gap-3">
@@ -336,6 +358,43 @@ export default function AdminTestimonials() {
             )}
 
             <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-white/60 mb-1.5">Foto do Cliente (Opcional)</label>
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden flex-shrink-0">
+                    {form.avatarUrl ? (
+                      <img src={form.avatarUrl} alt="Preview" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-xs text-white/40 uppercase">Foto</span>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileUpload}
+                      className="block w-full text-sm text-white/60
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-xl file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-orange-500/10 file:text-orange-400
+                        hover:file:bg-orange-500/20 file:transition-colors
+                        cursor-pointer
+                      "
+                    />
+                    <p className="text-xs text-white/40 mt-1">Máximo 500KB. Formatos visuais (JPG, PNG, WebP).</p>
+                    {form.avatarUrl && (
+                      <button 
+                        onClick={() => setForm(p => ({ ...p, avatarUrl: null }))}
+                        className="text-xs text-red-400 mt-2 hover:underline"
+                      >
+                        Remover Foto
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               <div>
                 <label className="block text-sm text-white/60 mb-1.5">Nome do Cliente *</label>
                 <input

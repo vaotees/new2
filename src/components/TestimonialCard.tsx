@@ -9,6 +9,7 @@ export interface TestimonialCardProps extends HTMLMotionProps<"div"> {
   stars?: number;
   color?: string;
   initials?: string;
+  avatarUrl?: string | null;
 }
 
 export function TestimonialCard({
@@ -18,6 +19,7 @@ export function TestimonialCard({
   stars = 5,
   color = '#4F46E5',
   initials,
+  avatarUrl,
   ...props
 }: TestimonialCardProps) {
   // Compute initials if not provided
@@ -58,10 +60,23 @@ export function TestimonialCard({
       {/* Author */}
       <div className="flex items-center gap-3 pt-4 border-t border-white/5">
         <div
-          className="w-10 h-10 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
+          className="w-10 h-10 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 overflow-hidden"
           style={{ background: `${color}33`, border: `1.5px solid ${color}55` }}
         >
-          {computedInitials}
+          {avatarUrl ? (
+            <img 
+              src={avatarUrl} 
+              alt={name} 
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                // Fallback to initials if image fails to load
+                (e.target as HTMLImageElement).style.display = 'none';
+                (e.target as HTMLImageElement).parentElement!.innerText = computedInitials;
+              }}
+            />
+          ) : (
+            computedInitials
+          )}
         </div>
         <div>
           <p className="text-white font-semibold text-sm">{name}</p>

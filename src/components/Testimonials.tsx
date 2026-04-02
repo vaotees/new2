@@ -9,6 +9,7 @@ export interface CMSTestimonial {
   authorRole: string
   content: string
   rating: number
+  avatarUrl?: string | null
 }
 
 export interface SectionTestimonialsConfig {
@@ -26,7 +27,7 @@ const staticTestimonials = [
     role: 'CEO, Mendes Investimentos',
     stars: 5,
     color: '#4F46E5',
-    initials: 'RM',
+    avatarUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=200&h=200',
   },
   {
     quote:
@@ -35,7 +36,7 @@ const staticTestimonials = [
     role: 'Diretora de Marketing, TechFlow',
     stars: 5,
     color: '#0EA5E9',
-    initials: 'FC',
+    avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200&h=200',
   },
   {
     quote:
@@ -44,7 +45,7 @@ const staticTestimonials = [
     role: 'Fundador, MO Consultoria',
     stars: 5,
     color: '#D4AF37',
-    initials: 'MO',
+    avatarUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200&h=200',
   },
 ]
 
@@ -70,7 +71,7 @@ export default function Testimonials({ cmsTestimonials, sectionConfig }: Testimo
         role: t.authorRole,
         stars: t.rating,
         color: COLORS[index % COLORS.length],
-        initials: t.authorName.substring(0, 2).toUpperCase()
+        avatarUrl: t.avatarUrl
       }))
     : staticTestimonials
 

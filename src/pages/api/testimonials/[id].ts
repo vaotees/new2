@@ -11,10 +11,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === "PUT") {
     try {
-      const { authorName, authorRole, content, rating } = req.body
+      const { authorName, authorRole, content, rating, avatarUrl } = req.body
       const testimonial = await prisma.testimonial.update({
         where: { id: String(id) },
-        data: { authorName, authorRole, content, rating },
+        data: { authorName, authorRole, content, rating, avatarUrl },
       })
       return res.status(200).json(testimonial)
     } catch (error) {
