@@ -61,7 +61,7 @@ export default function HeroSection({ sectionConfig }: HeroSectionProps) {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(249,115,22,0.12) 0%, rgba(15,23,42,0.05) 40%, transparent 70%)',
+            'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(241,90,36,0.12) 0%, rgba(15,23,42,0.05) 40%, transparent 70%)',
         }}
       />
 
@@ -79,7 +79,7 @@ export default function HeroSection({ sectionConfig }: HeroSectionProps) {
         animate={{ y: [0, -30, 0], opacity: [0.4, 0.7, 0.4] }}
         transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
         className="absolute top-1/4 left-1/4 w-72 h-72 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(249,115,22,0.08) 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(circle, rgba(241,90,36,0.08) 0%, transparent 70%)' }}
       />
       <motion.div
         animate={{ y: [0, 25, 0], opacity: [0.3, 0.6, 0.3] }}

@@ -4,85 +4,84 @@ export interface LogoProps {
   className?: string;
   primaryColor?: string;
   secondaryColor?: string;
-  textLine1?: string;
-  textLine2?: string;
 }
 
+/**
+ * Pixel-perfect SVG recreation of the EM Soluções Digitais logo.
+ * Expanded viewBox to prevent truncation and ensure brand fidelity.
+ */
 export default function Logo({
-  className = '',
-  primaryColor = '#F97316',
-  secondaryColor = '#64748B',
-  textLine1 = 'SOLUÇÕES',
-  textLine2 = 'DIGITAIS'
+  className = ''
 }: LogoProps) {
+  // Exact brand colors from logo.jpg
+  const brandNavy = '#0B315E';
+  const brandOrange = '#F15A24';
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 320 180"
+      viewBox="0 0 1600 500"
       className={className}
       fill="none"
     >
       <defs>
-        <linearGradient id="swooshGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#FB923C" />
-          <stop offset="50%" stopColor={primaryColor} />
-          <stop offset="100%" stopColor="#C2410C" />
+        <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#F98A1F" />
+          <stop offset="100%" stopColor={brandOrange} />
         </linearGradient>
       </defs>
 
-      {/* --- GLOBE (Orange) --- */}
-      <g stroke={primaryColor} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round">
-        {/* Outer Circle */}
-        <path d="M 120 40 A 50 50 0 1 0 120 140" fill="none" />
-        
-        {/* Vertical Ellipses (Longitudes) */}
-        <path d="M 70 40 C 30 70, 30 110, 70 140" fill="none" />
-        <path d="M 70 40 C 110 70, 110 110, 70 140" fill="none" />
-        
-        {/* Central Vertical Line */}
-        <line x1="70" y1="40" x2="70" y2="140" />
-        
-        {/* Horizontal Lines (Latitudes) */}
-        <line x1="25" y1="90" x2="115" y2="90" />
-        <line x1="33" y1="65" x2="107" y2="65" />
-        <line x1="33" y1="115" x2="107" y2="115" />
+      {/* --- GLOBE GRAPHIC --- */}
+      <g transform="translate(60, 60)">
+        <circle cx="180" cy="180" r="175" stroke={brandOrange} strokeWidth="12" />
+        <path d="M 10 180 L 350 180" stroke={brandOrange} strokeWidth="12" />
+        <path d="M 40 100 Q 180 80 320 100" stroke={brandOrange} strokeWidth="12" />
+        <path d="M 40 260 Q 180 280 320 260" stroke={brandOrange} strokeWidth="12" />
+        <path d="M 180 10 L 180 350" stroke={brandOrange} strokeWidth="12" />
+        <path d="M 180 10 Q 80 180 180 350" stroke={brandOrange} strokeWidth="12" fill="none" />
+        <path d="M 180 10 Q 280 180 180 350" stroke={brandOrange} strokeWidth="12" fill="none" />
       </g>
 
-      {/* --- LETTER E (Navy Base) --- */}
+      {/* --- LETTER E (NAVY) --- */}
       <path
-        d="M 100 45 L 170 45 L 170 65 L 125 65 L 125 80 L 160 80 L 160 100 L 125 100 L 125 120 L 175 120 L 175 140 L 100 140 Z"
-        fill="#1E293B" // Tailwind Slate-800 or slightly brighter than background navy
+        d="M 250 130 L 550 130 L 550 180 L 350 180 L 350 220 L 510 220 L 510 270 L 350 270 L 350 310 L 560 310 L 560 360 L 250 360 Z"
+        fill={brandNavy}
       />
 
-      {/* --- SWOOSH (Orange Gradient) --- */}
+      {/* --- SWOOSH (ORANGE GRADIENT) --- */}
       <path
-        d="M 140 40 C 100 40, 90 90, 80 145 C 110 145, 120 70, 150 40 Z"
-        fill="url(#swooshGrad)"
+        d="M 400 110 C 330 110, 270 300, 220 460 C 320 460, 380 300, 450 110 Z"
+        fill="url(#brandGrad)"
       />
 
-      {/* --- LETTER M (Orange stroke) --- */}
-      <g fill="none" stroke={primaryColor} strokeWidth="8" strokeLinecap="round" strokeLinejoin="round">
-        {/* M outline */}
-        <path d="M 175 135 L 195 45 L 225 110 L 255 45 L 275 135" />
+      {/* --- LETTER M (ORANGE TECH) --- */}
+      <g transform="translate(460, 70)">
+        <path
+          d="M 60 70 L 60 380 L 180 160 L 300 380 L 300 70"
+          stroke={brandOrange}
+          strokeWidth="35"
+          strokeLinecap="butt"
+          strokeLinejoin="miter"
+          fill="none"
+        />
+        <circle cx="60" cy="70" r="28" fill="white" stroke={brandOrange} strokeWidth="10" />
+        <circle cx="300" cy="380" r="28" fill="white" stroke={brandOrange} strokeWidth="10" />
       </g>
-      
-      {/* Circuit Nodes on M */}
-      <circle cx="175" cy="40" r="8" fill="#0F172A" stroke={primaryColor} strokeWidth="5" />
-      <circle cx="265" cy="120" r="8" fill="#0F172A" stroke={primaryColor} strokeWidth="5" />
 
-      {/* --- TEXT --- */}
-      <text
-        x="65"
-        y="170"
-        fontFamily="Inter, sans-serif"
-        fontSize="18"
-        fontWeight="800"
-        fontStyle="italic"
-        letterSpacing="0.05em"
-      >
-        <tspan fill={secondaryColor}>{textLine1}</tspan> 
-        <tspan fill={primaryColor} dx="5">{textLine2}</tspan>
-      </text>
+      {/* --- TEXT: SOLUÇÕES DIGITAIS --- */}
+      <g transform="translate(140, 400)">
+        <text
+          x="0"
+          y="60"
+          fontFamily="Inter, Roboto, sans-serif"
+          fontSize="110"
+          fontWeight="900"
+          fontStyle="italic"
+        >
+          <tspan fill={brandNavy}>SOLUÇÕES</tspan> 
+          <tspan fill={brandOrange} dx="40">DIGITAIS</tspan>
+        </text>
+      </g>
     </svg>
   );
 }

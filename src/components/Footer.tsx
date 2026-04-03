@@ -4,7 +4,13 @@ import { Instagram, Facebook, Mail, Phone, MapPin } from 'lucide-react'
 import Logo from './Logo'
 import ContactForm from './ContactForm'
 
-const footerLinks = {
+interface FooterLink {
+  text: string;
+  href?: string;
+  icon?: React.ReactNode;
+}
+
+const footerLinks: Record<string, FooterLink[]> = {
   Serviços: [
     { text: 'Websites de Alta Performance', href: '#services' },
     { text: 'Design Gráfico & Posicionamento', href: '#services' },
@@ -47,7 +53,7 @@ export default function Footer({
           className="absolute inset-0"
           style={{
             background:
-              'radial-gradient(ellipse 80% 100% at 50% 100%, rgba(249,115,22,0.08) 0%, transparent 70%)',
+              'radial-gradient(ellipse 80% 100% at 50% 100%, rgba(241,90,36,0.08) 0%, transparent 70%)',
           }}
         />
         <div className="max-w-7xl mx-auto px-6 py-24 relative z-10">
@@ -77,8 +83,12 @@ export default function Footer({
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
             {/* Brand */}
             <div className="md:col-span-1">
-              <div className="flex items-center gap-2 mb-6">
-                <Logo className="h-14 w-auto drop-shadow-md" />
+              <div className="mb-6">
+                <img 
+                  src="/logo.png" 
+                  alt="EM Soluções Digitais" 
+                  className="h-14 md:h-16 w-auto drop-shadow-lg"
+                />
               </div>
               <p className="text-slate-500 text-sm leading-relaxed mb-6">
                 EM Soluções Digitais. Agência especializada em transformar marcas em referências de mercado.
@@ -146,15 +156,7 @@ export default function Footer({
             {copyrightText}
           </p>
           <div className="flex gap-6">
-            {['Privacidade', 'Termos de Uso', 'Cookies'].map((item) => (
-              <a
-                key={item}
-                href="#"
-                className="text-slate-600 hover:text-slate-400 text-xs transition-colors"
-              >
-                {item}
-              </a>
-            ))}
+            {/* Links removidos conforme solicitado */}
           </div>
         </div>
       </div>
