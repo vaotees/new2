@@ -1,7 +1,6 @@
 'use client'
 
 import { Instagram, Facebook, Mail, Phone, MapPin } from 'lucide-react'
-import Logo from './Logo'
 import ContactForm from './ContactForm'
 
 interface FooterLink {
@@ -85,7 +84,7 @@ export default function Footer({
             <div className="md:col-span-1">
               <div className="mb-6">
                 <img 
-                  src="/logo.png" 
+                  src="/logo-brand.png" 
                   alt="EM Soluções Digitais" 
                   className="h-14 md:h-16 w-auto drop-shadow-lg"
                 />

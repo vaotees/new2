@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Zap, Menu, X, Lock } from 'lucide-react'
-import Logo from './Logo'
 
 const defaultNavLinks = [
   { href: '#services', label: 'Serviços' },
@@ -46,7 +45,7 @@ export default function Navbar({
             className="flex items-center gap-2 group transition-all duration-300"
           >
             <img 
-              src="/logo.png" 
+              src="/logo-brand.png" 
               alt="EM Soluções Digitais" 
               className="h-10 md:h-12 w-auto drop-shadow-md transition-transform group-hover:scale-105"
             />
