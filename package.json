@@ -36,8 +36,8 @@
     "@vitest/browser-playwright": "^4.1.1",
     "@vitest/coverage-v8": "^4.1.1",
     "autoprefixer": "10.4.16",
-    "eslint": "8.27.0",
-    "eslint-config-next": "12.3.4",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "14.2.35",
     "eslint-plugin-storybook": "^10.3.3",
     "playwright": "^1.58.2",
     "postcss": "8.4.18",
@@ -50,7 +50,12 @@
   },
   "eslintConfig": {
     "extends": [
+      "next/core-web-vitals",
       "plugin:storybook/recommended"
-    ]
+    ],
+    "rules": {
+      "react/no-unescaped-entities": "off",
+      "@next/next/no-img-element": "off"
+    }
   }
 }
