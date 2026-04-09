@@ -2,7 +2,7 @@ import { Html, Head, Main, NextScript } from 'next/document'
 
 export default function Document() {
   return (
-    <Html lang="pt-BR">
+    <Html lang="pt-BR" suppressHydrationWarning>
       <Head>
         <meta name="description" content="Transformamos marcas em autoridades digitais. Branding, desenvolvimento web, SEO, tráfego pago e muito mais." />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -16,3 +16,4 @@ export default function Document() {
     </Html>
   )
 }
+

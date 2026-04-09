@@ -109,11 +109,11 @@ export default function FeaturesGrid({ cmsFeatures, sectionConfig }: FeaturesGri
           <span className="inline-block text-xs font-bold uppercase tracking-[0.25em] text-orange mb-4">
             {config.tagline || "NOSSOS SERVIÇOS"}
           </span>
-          <h2 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
+          <h2 className="text-4xl md:text-5xl font-black text-foreground mb-6 leading-tight">
             {config.title1 || "Tudo que você precisa para se tornar "}{' '}
             <span className="text-orange-gradient">{config.titleHighlight || "referência no digital"}</span>
           </h2>
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto whitespace-pre-wrap">
+          <p className="text-foreground-muted text-lg max-w-2xl mx-auto whitespace-pre-wrap">
             {config.description || "Uma suite completa de serviços integrados, construída para marcas que não aceitam mediocridade."}
           </p>
         </motion.div>

@@ -104,11 +104,11 @@ export default function Testimonials({ cmsTestimonials, sectionConfig }: Testimo
           <span className="inline-block text-xs font-bold uppercase tracking-[0.25em] text-orange mb-4">
             {config.tagline || "DEPOIMENTOS"}
           </span>
-          <h2 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
+          <h2 className="text-4xl md:text-5xl font-black text-foreground mb-6 leading-tight">
             {config.title1 || "O que nossos clientes "}{' '}
             <span className="text-orange-gradient">{config.titleHighlight || "dizem sobre nós"}</span>
           </h2>
-          <p className="text-slate-400 text-lg max-w-xl mx-auto whitespace-pre-wrap">
+          <p className="text-foreground-muted text-lg max-w-xl mx-auto whitespace-pre-wrap">
             {config.description || "Resultados reais de marcas que escolheram a autoridade digital."}
           </p>
         </motion.div>

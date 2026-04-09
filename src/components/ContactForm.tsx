@@ -98,7 +98,7 @@ export default function ContactForm() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex flex-col gap-2">
-              <label htmlFor="name" className="text-xs font-bold uppercase tracking-widest text-slate-400">Nome Completo</label>
+              <label htmlFor="name" className="text-xs font-bold uppercase tracking-widest text-foreground-muted">Nome Completo</label>
               <input
                   id="name"
                   name="name"
@@ -106,13 +106,14 @@ export default function ContactForm() {
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  className="bg-background-navy border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all"
+                  className="w-full border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all"
+                  style={{ backgroundColor: 'var(--color-input-bg)' }}
                   placeholder="Ex: João da Silva"
               />
             </div>
             
             <div className="flex flex-col gap-2">
-              <label htmlFor="email" className="text-xs font-bold uppercase tracking-widest text-slate-400">E-mail</label>
+              <label htmlFor="email" className="text-xs font-bold uppercase tracking-widest text-foreground-muted">E-mail</label>
               <input
                   id="email"
                   name="email"
@@ -120,13 +121,14 @@ export default function ContactForm() {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="bg-background-navy border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all"
+                  className="w-full border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all"
+                  style={{ backgroundColor: 'var(--color-input-bg)' }}
                   placeholder="Ex: joao@empresa.com"
               />
             </div>
 
             <div className="flex flex-col gap-2">
-              <label htmlFor="whatsapp" className="text-xs font-bold uppercase tracking-widest text-slate-400">WhatsApp</label>
+              <label htmlFor="whatsapp" className="text-xs font-bold uppercase tracking-widest text-foreground-muted">WhatsApp</label>
               <input
                   id="whatsapp"
                   name="whatsapp"
@@ -134,14 +136,15 @@ export default function ContactForm() {
                   required
                   value={formData.whatsapp}
                   onChange={handleChange}
-                  className="bg-background-navy border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all"
+                  className="w-full border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all"
+                  style={{ backgroundColor: 'var(--color-input-bg)' }}
                   placeholder="Ex: (11) 99999-9999"
                   maxLength={15}
               />
             </div>
 
             <div className="flex flex-col gap-2 relative">
-              <label htmlFor="location" className="text-xs font-bold uppercase tracking-widest text-slate-400">Localidade</label>
+              <label htmlFor="location" className="text-xs font-bold uppercase tracking-widest text-foreground-muted">Localidade</label>
               <input
                   id="location"
                   name="location"
@@ -150,7 +153,8 @@ export default function ContactForm() {
                   list="location-list"
                   value={formData.location}
                   onChange={handleChange}
-                  className="bg-background-navy border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all"
+                  className="w-full border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all"
+                  style={{ backgroundColor: 'var(--color-input-bg)' }}
                   placeholder="Ex: São Paulo, SP"
                   autoComplete="off"
               />
@@ -163,7 +167,7 @@ export default function ContactForm() {
           </div>
 
           <div className="flex flex-col gap-2 relative">
-            <label htmlFor="service" className="text-xs font-bold uppercase tracking-widest text-slate-400">Qual serviço você deseja?</label>
+            <label htmlFor="service" className="text-xs font-bold uppercase tracking-widest text-foreground-muted">Qual serviço você deseja?</label>
             <div className="relative group">
               <select
                   id="service"
@@ -171,16 +175,17 @@ export default function ContactForm() {
                   required
                   value={formData.service}
                   onChange={handleChange}
-                  className="w-full bg-background-navy border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all appearance-none cursor-pointer pr-10"
+                  className="w-full border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all appearance-none cursor-pointer pr-10"
                   style={{
+                    backgroundColor: 'var(--color-input-bg)',
                     backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23f97316' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 15 5 5 5-5'/%3E%3Cpath d='m7 9 5-5 5 5'/%3E%3C/svg%3E")`,
                     backgroundPosition: 'right 12px center',
                     backgroundRepeat: 'no-repeat',
                   }}
               >
-                <option value="" disabled className="bg-background-navy text-slate-500">Selecione uma opção...</option>
+                <option value="" disabled style={{ backgroundColor: 'var(--color-input-bg)' }}>Selecione uma opção...</option>
                 {services.map((srv) => (
-                    <option key={srv} value={srv} className="bg-background-navy text-white py-4">
+                    <option key={srv} value={srv} style={{ backgroundColor: 'var(--color-input-bg)' }} className="py-4">
                       {srv}
                     </option>
                 ))}
@@ -189,14 +194,15 @@ export default function ContactForm() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label htmlFor="message" className="text-xs font-bold uppercase tracking-widest text-slate-400">Mensagem ou detalhes do projeto (Opcional)</label>
+            <label htmlFor="message" className="text-xs font-bold uppercase tracking-widest text-foreground-muted">Mensagem ou detalhes do projeto (Opcional)</label>
             <textarea
                 id="message"
                 name="message"
                 rows={4}
                 value={formData.message}
                 onChange={handleChange}
-                className="bg-background-navy border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all resize-none"
+                className="w-full border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange transition-all resize-none"
+                style={{ backgroundColor: 'var(--color-input-bg)' }}
                 placeholder="Conte-nos um pouco sobre sua necessidade..."
             />
           </div>

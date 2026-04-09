@@ -65,7 +65,7 @@ export default function Home({ features, sectionConfig, testimonials, testiConfi
       <Head>
         <title>EM Soluções Digitais | Agência Digital Premium</title>
       </Head>
-      <main className="bg-background-dark min-h-screen">
+      <main className="bg-surface min-h-screen">
         <Navbar />
         <HeroSection sectionConfig={heroConfig} />
         <FeaturesGrid cmsFeatures={features} sectionConfig={sectionConfig} />

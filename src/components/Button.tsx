@@ -26,7 +26,7 @@ export function Button({
   
   const variants = {
     primary: 'btn-orange',
-    outline: 'rounded-full border border-white/15 text-slate-300 hover:text-white hover:border-white/30',
+    outline: 'rounded-full border border-foreground/20 text-foreground-muted hover:text-foreground hover:border-foreground/40',
   };
 
   const sizes = {

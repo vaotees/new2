@@ -53,12 +53,12 @@ export function TestimonialCard({
       </div>
 
       {/* Quote */}
-      <p className="text-slate-300 text-sm leading-relaxed font-medium flex-1">
+      <p className="text-foreground-muted text-sm leading-relaxed font-medium flex-1">
         {quote}
       </p>
 
       {/* Author */}
-      <div className="flex items-center gap-3 pt-4 border-t border-white/5">
+      <div className="flex items-center gap-3 pt-4 border-t border-border-subtle">
         <div
           className="w-10 h-10 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 overflow-hidden"
           style={{ background: `${color}33`, border: `1.5px solid ${color}55` }}
@@ -79,8 +79,8 @@ export function TestimonialCard({
           )}
         </div>
         <div>
-          <p className="text-white font-semibold text-sm">{name}</p>
-          <p className="text-slate-500 text-xs">{role}</p>
+          <p className="text-foreground font-semibold text-sm">{name}</p>
+          <p className="text-foreground-subtle text-xs">{role}</p>
         </div>
       </div>
     </motion.div>

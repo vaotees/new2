@@ -2,6 +2,7 @@ import type { Config } from 'tailwindcss'
 import plugin from 'tailwindcss/plugin'
 
 const config: Config = {
+  darkMode: 'class',
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -15,10 +16,18 @@ const config: Config = {
           navy: '#0F172A',
         },
         orange: {
-          DEFAULT: '#F15A24', // New Brand Orange
+          DEFAULT: '#F15A24',
           light: '#F7941D',
           dark: '#C23E00',
         },
+        // Semantic theme tokens (via CSS variables)
+        surface: 'var(--color-surface)',
+        'surface-raised': 'var(--color-surface-raised)',
+        foreground: 'var(--color-foreground)',
+        'foreground-muted': 'var(--color-foreground-muted)',
+        'foreground-subtle': 'var(--color-foreground-subtle)',
+        border: 'var(--color-border)',
+        'border-subtle': 'var(--color-border-subtle)',
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
@@ -37,20 +46,52 @@ const config: Config = {
     },
   },
   plugins: [
-    plugin(function ({ addComponents }) {
+    plugin(function ({ addComponents, addBase }) {
+      addBase({
+        // Light mode (default)
+        ':root': {
+          '--color-surface': '#F8FAFC',
+          '--color-surface-raised': '#FFFFFF',
+          '--color-foreground': '#0F172A',
+          '--color-foreground-muted': '#475569',
+          '--color-foreground-subtle': '#64748B',
+          '--color-border': 'rgba(15,23,42,0.1)',
+          '--color-border-subtle': 'rgba(15,23,42,0.06)',
+          '--color-input-bg': '#FFFFFF',
+          '--color-glass': 'rgba(15,23,42,0.04)',
+          '--color-glass-border': 'rgba(15,23,42,0.08)',
+          '--scrollbar-track': '#F1F5F9',
+          '--scrollbar-thumb': '#F15A24',
+        },
+        // Dark mode
+        '.dark': {
+          '--color-surface': '#0A1128',
+          '--color-surface-raised': '#0F172A',
+          '--color-foreground': '#F1F5F9',
+          '--color-foreground-muted': '#94A3B8',
+          '--color-foreground-subtle': '#64748B',
+          '--color-border': 'rgba(255,255,255,0.1)',
+          '--color-border-subtle': 'rgba(255,255,255,0.05)',
+          '--color-input-bg': '#0F172A',
+          '--color-glass': 'rgba(255,255,255,0.05)',
+          '--color-glass-border': 'rgba(255,255,255,0.10)',
+          '--scrollbar-track': '#0A1128',
+          '--scrollbar-thumb': '#F15A24',
+        },
+      })
       addComponents({
         '.glass-panel': {
-          background: 'rgba(255, 255, 255, 0.05)',
+          background: 'var(--color-glass)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
-          border: '1px solid rgba(255, 255, 255, 0.10)',
+          border: '1px solid var(--color-glass-border)',
           borderRadius: '1rem',
         },
         '.glass-panel-sm': {
-          background: 'rgba(255, 255, 255, 0.04)',
+          background: 'var(--color-glass)',
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          border: '1px solid var(--color-glass-border)',
           borderRadius: '0.75rem',
         },
         '.text-orange-gradient': {
@@ -58,6 +99,12 @@ const config: Config = {
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
+          paddingBottom: '0.15em',
+          paddingTop: '0.15em',
+          paddingRight: '0.05em',
+          marginBottom: '-0.15em',
+          marginTop: '-0.15em',
+          marginRight: '-0.05em',
         },
         '.btn-orange': {
           background: 'linear-gradient(135deg, #F7941D 0%, #F15A24 50%, #C23E00 100%)',

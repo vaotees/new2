@@ -45,7 +45,7 @@ export default function Footer({
   copyrightText = '© 2026 EM Soluções Digitais. Todos os direitos reservados.'
 }: FooterProps) {
   return (
-    <footer id="contact" style={{ backgroundColor: '#0A1128' }} className="border-t border-white/5">
+    <footer id="contact" className="bg-surface border-t border-border-subtle">
       {/* CTA Banner / Contact Form Section */}
       <div className="relative overflow-hidden">
         <div
@@ -61,11 +61,11 @@ export default function Footer({
               <p className="text-xs font-bold uppercase tracking-[0.25em] text-orange mb-4">
                 Pronto para crescer?
               </p>
-              <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
+              <h2 className="text-4xl md:text-5xl font-black text-foreground mb-6">
                 {ctaPrefix}
                 <span className="text-orange-gradient">{ctaHighlight}</span>
               </h2>
-              <p className="text-slate-400 mb-8 max-w-lg">
+              <p className="text-foreground-muted mb-8 max-w-lg">
                 {ctaSubtitle}
               </p>
             </div>
@@ -77,7 +77,7 @@ export default function Footer({
       </div>
 
       {/* Main footer */}
-      <div className="border-t border-white/5">
+      <div className="border-t border-border-subtle">
         <div className="max-w-7xl mx-auto px-6 py-16">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
             {/* Brand */}
@@ -89,27 +89,27 @@ export default function Footer({
                   className="h-14 md:h-16 w-auto drop-shadow-lg"
                 />
               </div>
-              <p className="text-slate-500 text-sm leading-relaxed mb-6">
+              <p className="text-foreground-subtle text-sm leading-relaxed mb-6">
                 EM Soluções Digitais. Agência especializada em transformar marcas em referências de mercado.
               </p>
               <div className="flex gap-3">
                 <a
                   href="https://www.instagram.com/em_solucoesdigitais"
                   target="_blank" rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-lg border border-white/10 flex items-center justify-center text-slate-500 hover:text-orange hover:border-orange/40 transition-all duration-200"
+                  className="w-9 h-9 rounded-lg border border-border flex items-center justify-center text-foreground-subtle hover:text-orange hover:border-orange/40 transition-all duration-200"
                 >
                   <Instagram size={16} />
                 </a>
                 <a
                   href="https://www.facebook.com/emsolucoesdigitais/"
                   target="_blank" rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-lg border border-white/10 flex items-center justify-center text-slate-500 hover:text-orange hover:border-orange/40 transition-all duration-200"
+                  className="w-9 h-9 rounded-lg border border-border flex items-center justify-center text-foreground-subtle hover:text-orange hover:border-orange/40 transition-all duration-200"
                 >
                   <Facebook size={16} />
                 </a>
                 <a
                   href="mailto:contato@emsolucoesdigitais.com.br"
-                  className="w-9 h-9 rounded-lg border border-white/10 flex items-center justify-center text-slate-500 hover:text-orange hover:border-orange/40 transition-all duration-200"
+                  className="w-9 h-9 rounded-lg border border-border flex items-center justify-center text-foreground-subtle hover:text-orange hover:border-orange/40 transition-all duration-200"
                 >
                   <Mail size={16} />
                 </a>
@@ -119,7 +119,7 @@ export default function Footer({
             {/* Links */}
             {Object.entries(footerLinks).map(([category, links]) => (
               <div key={category}>
-                <h4 className="text-white font-semibold text-sm mb-5">{category}</h4>
+                <h4 className="text-foreground font-semibold text-sm mb-5">{category}</h4>
                 <ul className="space-y-3">
                   {links.map((link, idx) => (
                     <li key={idx}>
@@ -128,13 +128,13 @@ export default function Footer({
                           href={link.href} 
                           target={link.href.startsWith('http') ? '_blank' : undefined}
                           rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                          className="flex items-start gap-2 text-slate-500 hover:text-slate-300 text-sm transition-colors duration-200"
+                          className="flex items-start gap-2 text-foreground-subtle hover:text-foreground-muted text-sm transition-colors duration-200"
                         >
                           {link.icon}
                           {link.text}
                         </a>
                       ) : (
-                        <span className="flex items-start gap-2 text-slate-500 text-sm">
+                        <span className="flex items-start gap-2 text-foreground-subtle text-sm">
                           {link.icon}
                           {link.text}
                         </span>
@@ -149,9 +149,9 @@ export default function Footer({
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-white/5">
+      <div className="border-t border-border-subtle">
         <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-slate-600 text-xs">
+          <p className="text-foreground-subtle text-xs">
             {copyrightText}
           </p>
           <div className="flex gap-6">

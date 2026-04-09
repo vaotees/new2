@@ -35,7 +35,7 @@ export default function HeroSection({ sectionConfig }: HeroSectionProps) {
     description: "Estratégia, design e tecnologia de ponta para posicionar seu negócio como referência no mercado digital. Resultados mensuráveis, estética impecável.",
     ctaPrimaryText: "Quero minha Autoridade Digital",
     ctaPrimaryUrl: "#contact",
-    ctaSecondaryText: "Ver nossos casos",
+    ctaSecondaryText: "Ver nossos cases",
     ctaSecondaryUrl: "#testimonials",
     socialClients: "+127 clientes",
     socialRating: "4.9 / 5.0",
@@ -45,6 +45,7 @@ export default function HeroSection({ sectionConfig }: HeroSectionProps) {
   const services = config.rotatingWords.split(',').map(s => s.trim()).filter(Boolean)
 
   const [currentService, setCurrentService] = useState(0)
+  const [avatarsHovered, setAvatarsHovered] = useState(false)
 
   useEffect(() => {
     if (services.length <= 1) return
@@ -108,7 +109,7 @@ export default function HeroSection({ sectionConfig }: HeroSectionProps) {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[1.05] tracking-tight mb-6"
+          className="text-5xl md:text-7xl lg:text-8xl font-black text-foreground leading-[1.05] tracking-tight mb-6"
         >
           {config.titlePrefix}{' '}
           <span className="relative inline-block align-bottom min-w-[280px] h-[1.2em]">
@@ -136,7 +137,7 @@ export default function HeroSection({ sectionConfig }: HeroSectionProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5 }}
-          className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed"
+          className="text-foreground-muted text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed"
         >
           {config.description}
         </motion.p>
@@ -172,31 +173,55 @@ export default function HeroSection({ sectionConfig }: HeroSectionProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1 }}
-          className="mt-16 flex flex-col sm:flex-row items-center justify-center gap-8 text-sm text-slate-500"
+          className="mt-16 flex flex-col sm:flex-row items-center justify-center gap-8 text-sm text-foreground-subtle"
         >
-          <div className="flex items-center gap-2">
-            <div className="flex -space-x-3">
+          <div
+            className="flex items-center gap-2 group/avatars cursor-pointer"
+            onMouseEnter={() => setAvatarsHovered(true)}
+            onMouseLeave={() => setAvatarsHovered(false)}
+          >
+            <div className="flex items-center">
               {[
                 config.socialAvatar1 || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=80&h=80',
                 config.socialAvatar2 || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=80&h=80',
                 config.socialAvatar3 || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=80&h=80',
                 config.socialAvatar4 || 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&q=80&w=80&h=80',
               ].map((src, i) => (
-                <div
+                <motion.div
                   key={i}
-                  className="w-9 h-9 rounded-full border-2 border-background-dark overflow-hidden flex-shrink-0"
+                  animate={{
+                    y: avatarsHovered ? -8 : 0,
+                    x: avatarsHovered ? i * 4 : 0,
+                    scale: avatarsHovered ? 1.15 : 1,
+                    zIndex: avatarsHovered ? 10 + i : 10 - i,
+                    marginRight: avatarsHovered ? '-4px' : '-12px',
+                  }}
+                  transition={{
+                    type: 'spring',
+                    stiffness: 400,
+                    damping: 20,
+                    delay: i * 0.04,
+                  }}
+                  style={{ position: 'relative', zIndex: 10 - i, marginRight: '-12px' }}
+                  className="w-9 h-9 rounded-full border-2 border-surface overflow-hidden flex-shrink-0 shadow-md"
                 >
                   <img
                     src={src}
                     alt={`Cliente ${i + 1}`}
                     className="w-full h-full object-cover"
                   />
-                </div>
+                </motion.div>
               ))}
             </div>
-            <span>{config.socialClients}</span>
+            <motion.span
+              animate={{ x: avatarsHovered ? 8 : 0, opacity: avatarsHovered ? 1 : 0.8 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 25, delay: 0.1 }}
+              className="ml-4"
+            >
+              {config.socialClients}
+            </motion.span>
           </div>
-          <div className="w-px h-4 bg-white/10 hidden sm:block" />
+          <div className="w-px h-4 bg-foreground/10 hidden sm:block" />
           <div className="flex items-center gap-1">
             {[1, 2, 3, 4, 5].map((i) => (
               <Star key={i} size={14} className="text-orange fill-orange" />
@@ -209,7 +234,7 @@ export default function HeroSection({ sectionConfig }: HeroSectionProps) {
       </div>
 
       {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background-dark to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-surface to-transparent pointer-events-none" />
     </section>
   )
 }

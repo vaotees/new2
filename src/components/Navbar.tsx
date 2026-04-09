@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Zap, Menu, X, Lock } from 'lucide-react'
+import { Menu, X, Lock } from 'lucide-react'
+import ThemeToggle from './ThemeToggle'
 
 const defaultNavLinks = [
   { href: '#services', label: 'Serviços' },
@@ -56,7 +57,7 @@ export default function Navbar({
               <a
                 key={link.href}
                 href={link.href}
-                className="text-slate-400 hover:text-white text-sm font-medium transition-colors duration-200 relative group"
+                className="text-foreground-muted hover:text-foreground text-sm font-medium transition-colors duration-200 relative group"
               >
                 {link.label}
                 <span className="absolute -bottom-1 left-0 w-0 h-px bg-orange transition-all duration-300 group-hover:w-full" />
@@ -64,13 +65,14 @@ export default function Navbar({
             ))}
           </div>
 
-          {/* Actions: Admin + CTA */}
-          <div className="hidden md:flex items-center gap-4">
+          {/* Actions: Theme Toggle + Admin + CTA */}
+          <div className="hidden md:flex items-center gap-3">
+            <ThemeToggle />
             <motion.a
               href="/admin"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
-              className="flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-white px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 transition-all"
+              className="flex items-center gap-1.5 text-xs font-medium text-foreground-muted hover:text-foreground px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/5 hover:border-black/20 dark:hover:border-white/10 transition-all"
             >
               <Lock size={12} />
               Admin
@@ -86,13 +88,16 @@ export default function Navbar({
           </div>
 
           {/* Mobile hamburger */}
-          <button
-            className="md:hidden text-slate-300 hover:text-white p-1"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Menu"
-          >
-            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div className="md:hidden flex items-center gap-2">
+            <ThemeToggle />
+            <button
+              className="text-foreground-muted hover:text-foreground p-1"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Menu"
+            >
+              {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
       </motion.nav>
 
@@ -111,7 +116,7 @@ export default function Navbar({
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className="text-slate-300 hover:text-white font-medium text-lg py-2 border-b border-white/5 last:border-0"
+                className="text-foreground-muted hover:text-foreground font-medium text-lg py-2 border-b border-black/5 dark:border-white/5 last:border-0"
               >
                 {link.label}
               </a>
@@ -121,7 +126,7 @@ export default function Navbar({
                 href="/admin"
                 whileTap={{ scale: 0.97 }}
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center justify-center gap-2 text-sm font-medium text-slate-300 hover:text-white px-6 py-3 rounded-lg bg-white/5 border border-white/10"
+                className="flex items-center justify-center gap-2 text-sm font-medium text-foreground-muted hover:text-foreground px-6 py-3 rounded-lg bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10"
               >
                 <Lock size={14} />
                 Área Administrativa
@@ -141,3 +146,4 @@ export default function Navbar({
     </>
   )
 }
+

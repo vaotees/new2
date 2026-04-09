@@ -33,8 +33,8 @@ export function FeatureCard({ title, description, icon: Icon, highlight = false,
         <Icon size={22} className="text-orange" strokeWidth={1.5} />
       </div>
       <div>
-        <h3 className="text-white font-bold text-lg mb-2">{title}</h3>
-        <p className="text-slate-400 text-sm leading-relaxed">{description}</p>
+        <h3 className="text-foreground font-bold text-lg mb-2">{title}</h3>
+        <p className="text-foreground-muted text-sm leading-relaxed">{description}</p>
       </div>
       <div className="w-0 h-px bg-orange group-hover:w-full transition-all duration-500 mt-auto" />
     </motion.div>
