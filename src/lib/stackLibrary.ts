@@ -95,6 +95,7 @@ export const STACK_LIBRARY: StackDef[] = [
   { name: "Chakra UI",    category: "UI / CSS",       color: "#319795", fg: "#ffffff", abbr: "Ch"  },
   { name: "Material UI",  category: "UI / CSS",       color: "#007FFF", fg: "#ffffff", abbr: "MUI" },
   { name: "Lucide",       category: "UI / CSS",       color: "#F97316", fg: "#ffffff", abbr: "Lc"  },
+  { name: "Figma",        category: "UI / CSS",       color: "#F24E1E", fg: "#ffffff", abbr: "Fg"  },
 
   // ── Pagamentos & Serviços ────────────────────────────────
   { name: "Stripe",       category: "Pagamento",      color: "#635BFF", fg: "#ffffff", abbr: "💳"  },
