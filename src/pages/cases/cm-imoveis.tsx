@@ -114,7 +114,9 @@ const caseNavLinks = [
 /* ─────────────────────────────────────────────
    Page Component
 ───────────────────────────────────────────── */
-export default function CmImoveisCase() {
+import { GetServerSideProps } from 'next'
+
+export default function CmImoveisCase({ mockupHeroUrl }: { mockupHeroUrl: string | null }) {
   return (
     <>
       <Head>
@@ -199,7 +201,7 @@ export default function CmImoveisCase() {
               </span>
             </motion.h1>
 
-            {/* Hero Visual Placeholder */}
+            {/* Hero Visual Placeholder or Image */}
             <motion.div
               initial="hidden"
               animate="visible"
@@ -210,30 +212,36 @@ export default function CmImoveisCase() {
                   'linear-gradient(135deg, var(--color-surface-raised) 0%, var(--color-glass) 100%)',
               }}
             >
-              {/* Decorative grid */}
-              <div
-                className="absolute inset-0 opacity-[0.04]"
-                style={{
-                  backgroundImage:
-                    'linear-gradient(rgba(241,90,36,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(241,90,36,0.8) 1px, transparent 1px)',
-                  backgroundSize: '48px 48px',
-                }}
-              />
-              {/* Glow rings */}
-              <div className="absolute w-64 h-64 rounded-full border border-orange/10 animate-pulse-slow" />
-              <div className="absolute w-96 h-96 rounded-full border border-orange/5 animate-pulse-slow" style={{ animationDelay: '1s' }} />
+              {mockupHeroUrl ? (
+                <img src={mockupHeroUrl} alt="Mockup Hero CM Imóveis" className="absolute inset-0 w-full h-full object-cover" />
+              ) : (
+                <>
+                  {/* Decorative grid */}
+                  <div
+                    className="absolute inset-0 opacity-[0.04]"
+                    style={{
+                      backgroundImage:
+                        'linear-gradient(rgba(241,90,36,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(241,90,36,0.8) 1px, transparent 1px)',
+                      backgroundSize: '48px 48px',
+                    }}
+                  />
+                  {/* Glow rings */}
+                  <div className="absolute w-64 h-64 rounded-full border border-orange/10 animate-pulse-slow" />
+                  <div className="absolute w-96 h-96 rounded-full border border-orange/5 animate-pulse-slow" style={{ animationDelay: '1s' }} />
 
-              <div className="relative z-10 text-center px-8">
-                <div className="w-16 h-16 rounded-2xl glass-panel flex items-center justify-center mx-auto mb-4 border border-orange/20">
-                  <Layers size={28} className="text-orange" />
-                </div>
-                <p className="text-foreground-muted text-sm font-medium">
-                  Insira aqui o mockup do projeto
-                </p>
-                <p className="text-foreground-subtle text-xs mt-1">
-                  Notebook / Mobile – aspect-video 16:9
-                </p>
-              </div>
+                  <div className="relative z-10 text-center px-8">
+                    <div className="w-16 h-16 rounded-2xl glass-panel flex items-center justify-center mx-auto mb-4 border border-orange/20">
+                      <Layers size={28} className="text-orange" />
+                    </div>
+                    <p className="text-foreground-muted text-sm font-medium">
+                      Insira aqui o mockup do projeto
+                    </p>
+                    <p className="text-foreground-subtle text-xs mt-1">
+                      Notebook / Mobile – aspect-video 16:9
+                    </p>
+                  </div>
+                </>
+              )}
             </motion.div>
           </div>
         </section>
@@ -558,3 +566,21 @@ export default function CmImoveisCase() {
     </>
   )
 }
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  try {
+    const { prisma } = await import('../../lib/prisma')
+    const project = await prisma.clientProject.findUnique({
+      where: { slug: 'cm-imoveis' },
+      select: { mockupHeroUrl: true }
+    })
+    return {
+      props: {
+        mockupHeroUrl: project?.mockupHeroUrl || null
+      }
+    }
+  } catch {
+    return { props: { mockupHeroUrl: null } }
+  }
+}
+

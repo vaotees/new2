@@ -105,27 +105,27 @@ function CaseCard({ project, idx }: { project: Project; idx: number }) {
         </span>
 
         {/* Mockup image or placeholder */}
-        <div className="relative z-10 flex flex-col items-center gap-4 p-10 w-full h-full">
-          {project.mockupCardUrl ? (
+        {project.mockupCardUrl ? (
+          <div className="absolute inset-0 z-10">
             <img
               src={project.mockupCardUrl}
               alt={`Mockup ${project.clientName}`}
-              className="w-full h-full object-contain max-h-80 drop-shadow-2xl"
+              className="w-full h-full object-cover"
             />
-          ) : (
-            <>
-              <div className="w-16 h-16 rounded-2xl glass-panel border border-orange/25 flex items-center justify-center mb-2">
-                <Building2 size={28} className="text-orange" />
-              </div>
-              <span className="text-xs font-semibold text-orange uppercase tracking-[0.2em]">
-                {project.category}
-              </span>
-              <p className="text-foreground-subtle text-xs text-center max-w-[180px]">
-                Mockup em breve
-              </p>
-            </>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="relative z-10 flex flex-col items-center justify-center gap-4 p-10 w-full h-full">
+            <div className="w-16 h-16 rounded-2xl glass-panel border border-orange/25 flex items-center justify-center mb-2">
+              <Building2 size={28} className="text-orange" />
+            </div>
+            <span className="text-xs font-semibold text-orange uppercase tracking-[0.2em] text-center">
+              {project.category}
+            </span>
+            <p className="text-foreground-subtle text-xs text-center max-w-[180px]">
+              Mockup em breve
+            </p>
+          </div>
+        )}
 
         {/* Live badge */}
         <div className="absolute bottom-5 right-5">
