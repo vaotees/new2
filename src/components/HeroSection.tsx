@@ -109,10 +109,15 @@ export default function HeroSection({ sectionConfig }: HeroSectionProps) {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="text-5xl md:text-7xl lg:text-8xl font-black text-foreground leading-[1.05] tracking-tight mb-6"
+          className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-foreground leading-[1.05] tracking-tight mb-6"
         >
           {config.titlePrefix}{' '}
-          <span className="relative inline-block align-bottom min-w-[280px] h-[1.2em]">
+          <span className="relative inline-grid align-bottom place-items-center">
+            {services.map((service, i) => (
+              <span key={`ph-${i}`} className="invisible opacity-0 select-none col-start-1 row-start-1 pointer-events-none whitespace-normal sm:whitespace-nowrap px-1 text-center w-full">
+                {service}
+              </span>
+            ))}
             <AnimatePresence exitBeforeEnter>
               <motion.span
                 key={currentService}
@@ -120,15 +125,11 @@ export default function HeroSection({ sectionConfig }: HeroSectionProps) {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: '-20%', opacity: 0 }}
                 transition={{ duration: 0.4, ease: 'easeOut' }}
-                className="absolute inset-x-0 bottom-0 flex items-center justify-center text-orange-gradient whitespace-nowrap"
+                className="col-start-1 row-start-1 flex items-center justify-center text-orange-gradient whitespace-normal sm:whitespace-nowrap text-center w-full"
               >
                 {services[currentService]}
               </motion.span>
             </AnimatePresence>
-            {/* Invisible placeholder for height */}
-            <span className="invisible opacity-0 select-none pointer-events-none px-4">
-              {services[0]}
-            </span>
           </span>
         </motion.h1>
 
