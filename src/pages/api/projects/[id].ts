@@ -31,17 +31,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         challengeText, solutionText, impactText, published, highlights
       } = req.body
 
-      // Update project fields
+      // Update project fields — only include defined fields to avoid overwriting with undefined
       const project = await prisma.clientProject.update({
         where: { id: id as string },
         data: {
-          slug: slug?.toLowerCase().replace(/\s+/g, "-"),
-          category, clientName, tagline, description, role,
-          status, year, liveUrl, caseUrl,
-          mockupCardUrl: mockupCardUrl || null,
-          mockupHeroUrl: mockupHeroUrl || null,
-          stackTags, challengeText, solutionText, impactText,
-          published: published !== false,
+          ...(slug !== undefined && { slug: slug.toLowerCase().replace(/\s+/g, "-") }),
+          ...(category !== undefined && { category }),
+          ...(clientName !== undefined && { clientName }),
+          ...(tagline !== undefined && { tagline }),
+          ...(description !== undefined && { description }),
+          ...(role !== undefined && { role }),
+          ...(status !== undefined && { status }),
+          ...(year !== undefined && { year }),
+          ...(liveUrl !== undefined && { liveUrl }),
+          ...(caseUrl !== undefined && { caseUrl }),
+          mockupCardUrl: mockupCardUrl ?? null,
+          mockupHeroUrl: mockupHeroUrl ?? null,
+          ...(stackTags !== undefined && { stackTags }),
+          ...(challengeText !== undefined && { challengeText }),
+          ...(solutionText !== undefined && { solutionText }),
+          ...(impactText !== undefined && { impactText }),
+          ...(published !== undefined && { published: published !== false }),
         },
       })
 

@@ -1,7 +1,6 @@
-'use client'
-
 import Head from 'next/head'
-import { useState, useEffect } from 'react'
+import { GetServerSideProps } from 'next'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import {
   ArrowRight,
@@ -9,11 +8,9 @@ import {
   ExternalLink,
   Building2,
   MessageSquare,
-  Loader2,
 } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import { findStack } from '@/lib/stackLibrary'
-import * as LucideIcons from 'lucide-react'
 
 /* ─────────────────────────────────────────────
    Types
@@ -171,9 +168,7 @@ function CaseCard({ project, idx }: { project: Project; idx: number }) {
         {/* Highlights */}
         {project.highlights?.length > 0 && (
           <motion.ul variants={stagger} className="space-y-2.5">
-            {project.highlights.map((h) => {
-              const Icon = (LucideIcons as any)[h.iconName] || LucideIcons.Zap
-              return (
+            {project.highlights.map((h) => (
                 <motion.li
                   key={h.id}
                   variants={fadeInUp}
@@ -184,8 +179,7 @@ function CaseCard({ project, idx }: { project: Project; idx: number }) {
                   </span>
                   {h.title || h.body}
                 </motion.li>
-              )
-            })}
+            ))}
           </motion.ul>
         )}
 
@@ -248,19 +242,8 @@ function CaseCard({ project, idx }: { project: Project; idx: number }) {
 /* ─────────────────────────────────────────────
    Page
 ───────────────────────────────────────────── */
-export default function CasosPage() {
-  const [projects, setProjects] = useState<Project[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetch('/api/projects')
-      .then((r) => r.json())
-      .then((data: Project[]) => {
-        setProjects(data.filter((p) => p.published))
-        setLoading(false)
-      })
-      .catch(() => setLoading(false))
-  }, [])
+export default function CasosPage({ initialProjects }: { initialProjects: Project[] }) {
+  const [projects] = useState<Project[]>(initialProjects)
 
   return (
     <>
@@ -373,19 +356,19 @@ export default function CasosPage() {
           <div className="max-w-7xl mx-auto px-6 flex flex-col gap-10">
 
             {/* Loading state */}
-            {loading && (
+            {projects.length === 0 && (
               <div className="flex items-center justify-center py-24">
-                <Loader2 className="w-8 h-8 animate-spin text-orange opacity-60" />
+                <div className="w-8 h-8 border-4 border-orange/30 border-t-orange rounded-full animate-spin" />
               </div>
             )}
 
             {/* Projects */}
-            {!loading && projects.map((project, idx) => (
+            {projects.map((project, idx) => (
               <CaseCard key={project.id} project={project} idx={idx} />
             ))}
 
             {/* Empty state */}
-            {!loading && projects.length === 0 && (
+            {projects.length === 0 && (
               <div className="text-center py-20 text-foreground-muted">
                 <Building2 className="w-10 h-10 mx-auto mb-4 opacity-30" />
                 <p>Nenhum projeto publicado ainda.</p>
@@ -393,35 +376,33 @@ export default function CasosPage() {
             )}
 
             {/* ── Coming Soon placeholder ─── */}
-            {!loading && (
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: '-40px' }}
-                variants={fadeInUp}
-                className="rounded-3xl border border-dashed border-border glass-panel p-12 md:p-16 flex flex-col items-center justify-center text-center gap-5 min-h-[240px]"
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-40px' }}
+              variants={fadeInUp}
+              className="rounded-3xl border border-dashed border-border glass-panel p-12 md:p-16 flex flex-col items-center justify-center text-center gap-5 min-h-[240px]"
+            >
+              <div className="w-12 h-12 rounded-2xl glass-panel border border-border flex items-center justify-center">
+                <Building2 size={20} className="text-foreground-subtle" />
+              </div>
+              <div>
+                <p className="text-foreground font-semibold mb-1">Novos cases em breve</p>
+                <p className="text-foreground-subtle text-sm max-w-sm">
+                  Estamos documentando mais projetos. Enquanto isso, entre em contato para
+                  conhecer nosso portfólio completo.
+                </p>
+              </div>
+              <motion.a
+                href="/#contact"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-border text-foreground-muted hover:text-foreground hover:border-orange/40 text-sm font-semibold transition-all duration-200"
               >
-                <div className="w-12 h-12 rounded-2xl glass-panel border border-border flex items-center justify-center">
-                  <Building2 size={20} className="text-foreground-subtle" />
-                </div>
-                <div>
-                  <p className="text-foreground font-semibold mb-1">Novos cases em breve</p>
-                  <p className="text-foreground-subtle text-sm max-w-sm">
-                    Estamos documentando mais projetos. Enquanto isso, entre em contato para
-                    conhecer nosso portfólio completo.
-                  </p>
-                </div>
-                <motion.a
-                  href="/#contact"
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-border text-foreground-muted hover:text-foreground hover:border-orange/40 text-sm font-semibold transition-all duration-200"
-                >
-                  <MessageSquare size={14} />
-                  Falar com um Especialista
-                </motion.a>
-              </motion.div>
-            )}
+                <MessageSquare size={14} />
+                Falar com um Especialista
+              </motion.a>
+            </motion.div>
           </div>
         </section>
 
@@ -494,4 +475,22 @@ export default function CasosPage() {
       </div>
     </>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  try {
+    const { prisma } = await import('../lib/prisma')
+    const projects = await prisma.clientProject.findMany({
+      where: { published: true },
+      include: { highlights: { orderBy: { order: 'asc' } } },
+      orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
+    })
+    return {
+      props: {
+        initialProjects: JSON.parse(JSON.stringify(projects)),
+      },
+    }
+  } catch {
+    return { props: { initialProjects: [] } }
+  }
 }

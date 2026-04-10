@@ -36,7 +36,7 @@ export default function ThemeToggle() {
         }
       `}
     >
-      <AnimatePresence mode="wait" initial={false}>
+      <AnimatePresence exitBeforeEnter initial={false}>
         {isDark ? (
           <motion.span
             key="sun"

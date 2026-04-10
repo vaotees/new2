@@ -76,34 +76,30 @@ export default function Home({ features, sectionConfig, testimonials, testiConfi
   )
 }
 
-export const getServerSideProps: GetServerSideProps<HomeProps> = async ({ req }) => {
+export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
   try {
-    const proto = req.headers['x-forwarded-proto'] || 'http'
-    const host = req.headers.host || 'localhost:3000'
-    const baseUrl = `${proto}://${host}`
+    const { prisma } = await import('../lib/prisma')
 
-    const [featuresRes, configRes, testiRes, testiConfigRes, heroConfigRes] = await Promise.all([
-      fetch(`${baseUrl}/api/features`),
-      fetch(`${baseUrl}/api/features/config`),
-      fetch(`${baseUrl}/api/testimonials`),
-      fetch(`${baseUrl}/api/testimonials/config`),
-      fetch(`${baseUrl}/api/hero/config`),
+    const [features, sectionConfig, testimonials, testiConfig, heroConfig] = await Promise.all([
+      prisma.feature.findMany({
+        orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
+      }),
+      prisma.sectionFeaturesConfig.findUnique({ where: { id: 'singleton' } }),
+      prisma.testimonial.findMany({
+        orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
+      }),
+      prisma.sectionTestimonialsConfig.findUnique({ where: { id: 'singleton' } }),
+      prisma.sectionHeroConfig.findUnique({ where: { id: 'singleton' } }),
     ])
 
-    const features = featuresRes.ok ? await featuresRes.json() : []
-    const sectionConfig = configRes.ok ? await configRes.json() : null
-    const testimonials = testiRes.ok ? await testiRes.json() : []
-    const testiConfig = testiConfigRes.ok ? await testiConfigRes.json() : null
-    const heroConfig = heroConfigRes.ok ? await heroConfigRes.json() : null
-
-    return { 
-      props: { 
-        features: Array.isArray(features) ? features : [],
-        sectionConfig: sectionConfig && !sectionConfig.error ? sectionConfig : null,
-        testimonials: Array.isArray(testimonials) ? testimonials : [],
-        testiConfig: testiConfig && !testiConfig.error ? testiConfig : null,
-        heroConfig: heroConfig && !heroConfig.error ? heroConfig : null,
-      } 
+    return {
+      props: {
+        features: JSON.parse(JSON.stringify(features)),
+        sectionConfig: sectionConfig ? JSON.parse(JSON.stringify(sectionConfig)) : null,
+        testimonials: JSON.parse(JSON.stringify(testimonials)),
+        testiConfig: testiConfig ? JSON.parse(JSON.stringify(testiConfig)) : null,
+        heroConfig: heroConfig ? JSON.parse(JSON.stringify(heroConfig)) : null,
+      }
     }
   } catch {
     return { props: { features: [], sectionConfig: null, testimonials: [], testiConfig: null, heroConfig: null } }

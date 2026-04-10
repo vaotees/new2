@@ -1,6 +1,21 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import nodemailer from 'nodemailer';
 
+// Sanitize: strip HTML tags, control chars, and trim
+function sanitize(value: unknown, maxLen = 500): string {
+  if (typeof value !== 'string') return ''
+  return value
+    .replace(/<[^>]*>/g, '')                         // strip HTML tags
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '')  // strip control chars
+    .trim()
+    .slice(0, maxLen)
+}
+
+// Basic email format validation
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -10,10 +25,19 @@ export default async function handler(
     return res.status(405).json({ message: `Método ${req.method} não permitido` });
   }
 
-  const { name, email, whatsapp, location, service, message } = req.body;
+  const name     = sanitize(req.body?.name, 200)
+  const email    = sanitize(req.body?.email, 200)
+  const whatsapp = sanitize(req.body?.whatsapp, 20)
+  const location = sanitize(req.body?.location, 200)
+  const service  = sanitize(req.body?.service, 200)
+  const message  = sanitize(req.body?.message, 2000)
 
   if (!name || !email || !whatsapp || !location || !service) {
-    return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
+    return res.status(400).json({ message: 'Todos os campos obrigatórios devem ser preenchidos' });
+  }
+
+  if (!isValidEmail(email)) {
+    return res.status(400).json({ message: 'Endereço de e-mail inválido' });
   }
 
   try {
@@ -27,23 +51,23 @@ export default async function handler(
       },
     });
 
-    const mailOptions = {
-      from: `"${name}" <${process.env.EMAIL_USER}>`,
+    await transporter.sendMail({
+      from: `"Site EM Soluções" <${process.env.EMAIL_USER}>`,
       replyTo: email,
       to: 'estevao.marques@gmail.com',
-      subject: `Nova Solicitação de Serviço: ${service}`,
-      text: `Nome: ${name}
-E-mail: ${email}
-WhatsApp: ${whatsapp}
-Localidade: ${location}
-Serviço Desejado: ${service}
-Mensagem: ${message || 'Não informada'}
-
---- 
-Enviado pela Landing Page EM Soluções Digitais`,
-    };
-
-    await transporter.sendMail(mailOptions);
+      subject: `Nova Solicitação: ${service}`,
+      text: [
+        `Nome: ${name}`,
+        `E-mail: ${email}`,
+        `WhatsApp: ${whatsapp}`,
+        `Localidade: ${location}`,
+        `Serviço: ${service}`,
+        `Mensagem: ${message || 'Não informada'}`,
+        '',
+        '---',
+        'Enviado pela Landing Page EM Soluções Digitais',
+      ].join('\n'),
+    });
 
     return res.status(200).json({ message: 'E-mail enviado com sucesso' });
   } catch (error) {

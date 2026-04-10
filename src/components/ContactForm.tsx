@@ -83,13 +83,13 @@ export default function ContactForm() {
             className="flex flex-col items-center justify-center py-10 text-center"
         >
           <CheckCircle2 size={64} className="text-orange mb-6" />
-          <h3 className="text-3xl font-bold text-white mb-3">Mensagem Enviada!</h3>
-          <p className="text-slate-400">
+          <h3 className="text-3xl font-bold text-foreground mb-3">Mensagem Enviada!</h3>
+          <p className="text-foreground-muted">
             Agradecemos o contato. Nossa equipe especialista entrará em contato com você em breve.
           </p>
           <button
               onClick={() => setStatus('idle')}
-              className="mt-8 text-orange hover:text-white transition-colors underline underline-offset-4 text-sm font-semibold"
+              className="mt-8 text-orange hover:text-foreground transition-colors underline underline-offset-4 text-sm font-semibold"
           >
             Enviar outra mensagem
           </button>

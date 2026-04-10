@@ -1,22 +1,24 @@
 import { signIn, useSession } from "next-auth/react"
 import { useRouter } from "next/router"
+import { useEffect } from "react"
 import { LogIn } from "lucide-react"
 
 export default function Login() {
   const { status } = useSession()
   const router = useRouter()
 
-  if (status === "loading") {
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace("/admin")
+    }
+  }, [status, router])
+
+  if (status === "loading" || status === "authenticated") {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     )
-  }
-
-  if (status === "authenticated") {
-    router.replace("/admin")
-    return null
   }
 
   return (
