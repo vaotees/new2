@@ -21,8 +21,9 @@ const footerLinks: Record<string, FooterLink[]> = {
   Empresa: [
     { text: 'Sobre Nós', href: '#' },
     { text: 'Serviços', href: '#services' },
-    { text: 'Cases de Sucesso', href: '#testimonials' },
+    { text: 'Depoimentos', href: '#testimonials' },
     { text: 'Contato', href: '#contact' },
+    { text: 'Cases de Sucesso', href: '/casos' },
   ],
   Contato: [
     { text: 'contato@emsolucoesdigitais.com.br', href: 'mailto:contato@emsolucoesdigitais.com.br', icon: <Mail size={13} className="text-orange shrink-0 mt-0.5" /> },

@@ -1,11 +1,12 @@
 import AdminLayout from "../../components/AdminLayout"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import {
   Plus, Pencil, Trash2, X, Check, Loader2, ChevronUp, ChevronDown,
-  ExternalLink, Eye, EyeOff, Building2, Image, Tag, FileText,
-  Lightbulb, Save, RefreshCw, AlertCircle
+  ExternalLink, Eye, EyeOff, Building2, ImageIcon, Tag, FileText,
+  Lightbulb, Save, RefreshCw, AlertCircle, Upload, XCircle, Search
 } from "lucide-react"
 import * as LucideIcons from "lucide-react"
+import { STACK_LIBRARY, findStack, getCategories, type StackDef } from "../../lib/stackLibrary"
 
 /* ─────────────────────────────────────────────────────────────
    Types
@@ -31,7 +32,8 @@ interface ClientProject {
   year: string
   liveUrl: string
   caseUrl: string
-  mockupUrl?: string | null
+  mockupCardUrl?: string | null
+  mockupHeroUrl?: string | null
   stackTags: string
   challengeText: string
   solutionText: string
@@ -45,7 +47,7 @@ const ICON_OPTIONS = [
   "Zap", "Search", "ShieldCheck", "Layers", "Server", "Cloud",
   "Star", "Rocket", "Code2", "Globe", "Users", "BarChart2",
   "Award", "Target", "Lightbulb", "Lock", "Package", "Cpu",
-  "Building2", "Image", "MessageSquare", "CheckCircle2", "ArrowRight",
+  "Building2", "ImageIcon", "MessageSquare", "CheckCircle2", "ArrowRight",
   "TrendingUp", "Database", "Settings", "Monitor", "Smartphone"
 ]
 
@@ -62,7 +64,8 @@ const emptyForm = (): Omit<ClientProject, "id" | "order" | "createdAt"> => ({
   year: new Date().getFullYear().toString(),
   liveUrl: "",
   caseUrl: "",
-  mockupUrl: "",
+  mockupCardUrl: "",
+  mockupHeroUrl: "",
   stackTags: "",
   challengeText: "",
   solutionText: "",
@@ -78,7 +81,7 @@ const TABS = [
   { id: "info", label: "Informações", icon: Building2 },
   { id: "content", label: "Conteúdo", icon: FileText },
   { id: "highlights", label: "Destaques", icon: Lightbulb },
-  { id: "media", label: "Mídia & Links", icon: Image },
+  { id: "media", label: "Mídia & Links", icon: ImageIcon },
 ]
 
 /* ─────────────────────────────────────────────────────────────
@@ -160,6 +163,387 @@ function IconPicker({ value, onChange }: { value: string; onChange: (v: string) 
 }
 
 /* ─────────────────────────────────────────────────────────────
+   Stack Badge — shared display component
+──────────────────────────────────────────────────────────────*/
+export function StackBadge({ name, size = "sm" }: { name: string; size?: "sm" | "xs" }) {
+  const def = findStack(name)
+  const bgColor = def?.color ?? "#3a3a3a"
+  const fgColor = def?.fg ?? "#ffffff"
+  const abbr = def?.abbr ?? name.slice(0, 2).toUpperCase()
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full border border-white/10
+      ${ size === "xs" ? "px-2 py-0.5 text-[10px]" : "px-2.5 py-1 text-xs" } font-medium`}
+      style={{ background: "rgba(255,255,255,0.05)" }}
+    >
+      <span
+        className={`rounded font-bold flex items-center justify-center flex-shrink-0
+          ${ size === "xs" ? "w-4 h-4 text-[8px]" : "w-5 h-5 text-[9px]" }`}
+        style={{ background: bgColor, color: fgColor }}
+      >
+        {abbr}
+      </span>
+      <span className="text-white/70">{name}</span>
+    </span>
+  )
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Stack Picker — visual multi-select from library
+──────────────────────────────────────────────────────────────*/
+interface StackPickerProps {
+  value: string       // comma-separated list of stack names
+  onChange: (v: string) => void
+}
+
+function StackPicker({ value, onChange }: StackPickerProps) {
+  const [search, setSearch] = useState("")
+  const [customInput, setCustomInput] = useState("")
+  const [expandedCats, setExpandedCats] = useState<Set<string>>(new Set(["Framework", "Banco de Dados"]))
+
+  const selected = value ? value.split(",").map(s => s.trim()).filter(Boolean) : []
+  const categories = getCategories()
+
+  const toggle = (name: string) => {
+    const idx = selected.findIndex(s => s.toLowerCase() === name.toLowerCase())
+    let next: string[]
+    if (idx >= 0) {
+      next = selected.filter((_, i) => i !== idx)
+    } else {
+      next = [...selected, name]
+    }
+    onChange(next.join(","))
+  }
+
+  const isSelected = (name: string) =>
+    selected.some(s => s.toLowerCase() === name.toLowerCase())
+
+  const addCustom = () => {
+    const t = customInput.trim()
+    if (!t) return
+    if (!isSelected(t)) {
+      onChange([...selected, t].join(","))
+    }
+    setCustomInput("")
+  }
+
+  const toggleCat = (cat: string) => {
+    const next = new Set(expandedCats)
+    next.has(cat) ? next.delete(cat) : next.add(cat)
+    setExpandedCats(next)
+  }
+
+  const filtered = search.trim()
+    ? STACK_LIBRARY.filter(s =>
+        s.name.toLowerCase().includes(search.toLowerCase()) ||
+        s.category.toLowerCase().includes(search.toLowerCase())
+      )
+    : null // null = show by category
+
+  return (
+    <div className="space-y-3">
+      {/* Selected chips */}
+      {selected.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {selected.map(name => {
+            const def = findStack(name)
+            return (
+              <button
+                key={name}
+                type="button"
+                onClick={() => toggle(name)}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full
+                  bg-white/10 border border-white/20 text-xs font-medium text-white
+                  hover:bg-red-500/20 hover:border-red-500/30 transition-all group"
+              >
+                <span
+                  className="w-4 h-4 rounded text-[8px] font-bold flex items-center justify-center flex-shrink-0"
+                  style={{ background: def?.color ?? "#555", color: def?.fg ?? "#fff" }}
+                >
+                  {def?.abbr ?? name.slice(0, 2)}
+                </span>
+                {name}
+                <X className="w-3 h-3 text-white/40 group-hover:text-red-400 transition-colors" />
+              </button>
+            )
+          })}
+        </div>
+      )}
+
+      {/* Search + custom add row */}
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/30" />
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Buscar tecnologia..."
+            className="w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl
+              pl-9 pr-4 py-2 outline-none focus:border-orange-500/50 placeholder-white/20 transition-all"
+          />
+        </div>
+        <div className="flex gap-1">
+          <input
+            type="text"
+            value={customInput}
+            onChange={e => setCustomInput(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && addCustom()}
+            placeholder="Personalizado..."
+            className="w-36 bg-white/5 border border-white/10 text-white text-sm rounded-xl
+              px-3 py-2 outline-none focus:border-orange-500/50 placeholder-white/20 transition-all"
+          />
+          <button
+            type="button"
+            onClick={addCustom}
+            className="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white/60 hover:text-white
+              text-sm transition-all border border-white/10"
+          >
+            <Plus className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Library grid */}
+      <div className="border border-white/10 rounded-xl overflow-hidden max-h-72 overflow-y-auto">
+        {filtered ? (
+          /* Search results — flat grid */
+          <div className="p-3 grid grid-cols-2 gap-1.5">
+            {filtered.length === 0 ? (
+              <p className="col-span-2 text-center text-white/30 text-sm py-4">Nenhuma tecnologia encontrada.</p>
+            ) : filtered.map(s => (
+              <StackItem key={s.name} def={s} selected={isSelected(s.name)} onToggle={() => toggle(s.name)} />
+            ))}
+          </div>
+        ) : (
+          /* Categorized view */
+          categories.map(cat => {
+            const items = STACK_LIBRARY.filter(s => s.category === cat)
+            const isOpen = expandedCats.has(cat)
+            return (
+              <div key={cat} className="border-b border-white/5 last:border-0">
+                <button
+                  type="button"
+                  onClick={() => toggleCat(cat)}
+                  className="w-full flex items-center justify-between px-4 py-2.5
+                    text-xs font-semibold text-white/40 uppercase tracking-wider
+                    hover:bg-white/5 hover:text-white/60 transition-all"
+                >
+                  <span>{cat}</span>
+                  <span className="flex items-center gap-2">
+                    <span className="text-white/20 normal-case font-normal tracking-normal">
+                      {items.filter(s => isSelected(s.name)).length}/{items.length}
+                    </span>
+                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                  </span>
+                </button>
+                {isOpen && (
+                  <div className="px-3 pb-3 grid grid-cols-2 gap-1.5">
+                    {items.map(s => (
+                      <StackItem key={s.name} def={s} selected={isSelected(s.name)} onToggle={() => toggle(s.name)} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          })
+        )}
+      </div>
+    </div>
+  )
+}
+
+function StackItem({ def, selected, onToggle }: { def: StackDef; selected: boolean; onToggle: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all text-left
+        ${ selected
+          ? "bg-orange-500/15 border border-orange-500/30 text-white"
+          : "bg-white/[0.03] border border-white/5 text-white/60 hover:bg-white/8 hover:text-white hover:border-white/15"
+        }`}
+    >
+      <span
+        className="w-6 h-6 rounded text-[10px] font-bold flex items-center justify-center flex-shrink-0"
+        style={{ background: def.color, color: def.fg }}
+      >
+        {def.abbr}
+      </span>
+      <span className="truncate">{def.name}</span>
+      {selected && <Check className="w-3 h-3 text-orange-400 ml-auto flex-shrink-0" />}
+    </button>
+  )
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ImageUploader – drag-drop + file picker + preview
+──────────────────────────────────────────────────────────────*/
+interface ImageUploaderProps {
+  label: string
+  description: string
+  aspectHint: string // e.g. "Proporção: 4:3 (card)"
+  value: string | null | undefined
+  onChange: (url: string | null) => void
+}
+
+function ImageUploader({ label, description, aspectHint, value, onChange }: ImageUploaderProps) {
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState("")
+  const [dragOver, setDragOver] = useState(false)
+  const fileRef = useRef<HTMLInputElement>(null)
+
+  const processFile = useCallback(async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      setUploadError("Apenas imagens são permitidas.")
+      return
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      setUploadError("Tamanho máximo: 8MB.")
+      return
+    }
+
+    setUploading(true)
+    setUploadError("")
+
+    try {
+      // Read as base64
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result as string)
+        reader.onerror = reject
+        reader.readAsDataURL(file)
+      })
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ base64, filename: file.name }),
+      })
+
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || "Erro no upload")
+      onChange(data.url)
+    } catch (err: any) {
+      setUploadError(err.message || "Erro ao fazer upload.")
+    } finally {
+      setUploading(false)
+    }
+  }, [onChange])
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setDragOver(false)
+    const file = e.dataTransfer.files[0]
+    if (file) processFile(file)
+  }, [processFile])
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) processFile(file)
+    // Reset input so same file can be re-selected
+    e.target.value = ""
+  }
+
+  return (
+    <div className="space-y-2">
+      {/* Label row */}
+      <div className="flex items-center justify-between">
+        <label className="block text-sm text-white/60 font-medium">{label}</label>
+        <span className="text-[10px] text-white/25 font-mono">{aspectHint}</span>
+      </div>
+
+      {/* Description */}
+      <p className="text-white/30 text-xs">{description}</p>
+
+      {/* Drop zone / Preview */}
+      {value ? (
+        /* ── Has image — show preview ── */
+        <div className="relative rounded-xl overflow-hidden border border-white/10 bg-white/5 group">
+          <img
+            src={value}
+            alt={label}
+            className="w-full object-cover max-h-52"
+            onError={e => { (e.target as HTMLImageElement).style.display = "none" }}
+          />
+          {/* Hover overlay */}
+          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity
+            flex items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20
+                text-white text-xs font-medium transition-all"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              Trocar
+            </button>
+            <button
+              type="button"
+              onClick={() => onChange(null)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30
+                text-red-300 text-xs font-medium transition-all"
+            >
+              <XCircle className="w-3.5 h-3.5" />
+              Remover
+            </button>
+          </div>
+        </div>
+      ) : (
+        /* ── No image — drop zone ── */
+        <div
+          onDragOver={e => { e.preventDefault(); setDragOver(true) }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={handleDrop}
+          onClick={() => fileRef.current?.click()}
+          className={`relative rounded-xl border-2 border-dashed transition-all cursor-pointer
+            flex flex-col items-center justify-center gap-3 py-10 px-6
+            ${dragOver
+              ? "border-orange-500 bg-orange-500/10"
+              : "border-white/15 hover:border-orange-500/50 hover:bg-white/[0.03]"
+            }`}
+        >
+          {uploading ? (
+            <>
+              <Loader2 className="w-8 h-8 text-orange-400 animate-spin" />
+              <p className="text-white/50 text-sm">Enviando imagem...</p>
+            </>
+          ) : (
+            <>
+              <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+                <Upload className="w-5 h-5 text-white/40" />
+              </div>
+              <div className="text-center">
+                <p className="text-white/60 text-sm font-medium">
+                  {dragOver ? "Solte a imagem aqui" : "Clique ou arraste a imagem"}
+                </p>
+                <p className="text-white/25 text-xs mt-0.5">PNG, JPG, WebP — máx. 8MB</p>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Error */}
+      {uploadError && (
+        <p className="text-red-400 text-xs flex items-center gap-1.5">
+          <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+          {uploadError}
+        </p>
+      )}
+
+      {/* Hidden input */}
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+    </div>
+  )
+}
+
+/* ─────────────────────────────────────────────────────────────
    Main Page
 ──────────────────────────────────────────────────────────────*/
 export default function AdminProjects() {
@@ -216,7 +600,8 @@ export default function AdminProjects() {
       year: p.year,
       liveUrl: p.liveUrl,
       caseUrl: p.caseUrl,
-      mockupUrl: p.mockupUrl || "",
+      mockupCardUrl: p.mockupCardUrl || "",
+      mockupHeroUrl: p.mockupHeroUrl || "",
       stackTags: p.stackTags,
       challengeText: p.challengeText,
       solutionText: p.solutionText,
@@ -413,16 +798,21 @@ export default function AdminProjects() {
                       className="text-white/40 hover:text-white disabled:opacity-20 transition-colors">
                       <ChevronUp size={15} />
                     </button>
-                    <button onClick={() => reorder(idx, projects.length - 1)} disabled={idx === projects.length - 1}
+                    <button onClick={() => reorder(idx, "down")} disabled={idx === projects.length - 1}
                       className="text-white/40 hover:text-white disabled:opacity-20 transition-colors">
                       <ChevronDown size={15} />
                     </button>
                   </div>
 
-                  {/* Icon */}
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500/20 to-orange-600/10
-                    border border-orange-500/20 flex items-center justify-center flex-shrink-0">
-                    <Building2 className="w-5 h-5 text-orange-400" />
+                  {/* Mockup thumbnail or icon */}
+                  <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 border border-white/10 bg-white/5">
+                    {project.mockupCardUrl ? (
+                      <img src={project.mockupCardUrl} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-500/20 to-orange-600/10">
+                        <Building2 className="w-5 h-5 text-orange-400" />
+                      </div>
+                    )}
                   </div>
 
                   {/* Info */}
@@ -442,11 +832,11 @@ export default function AdminProjects() {
                     </p>
                     <div className="flex items-center gap-3 mt-1">
                       <span className="text-white/30 text-xs font-mono">/{project.slug}</span>
-                      {project.highlights.length > 0 && (
-                        <span className="text-white/25 text-xs">
-                          {project.highlights.length} destaques
-                        </span>
-                      )}
+                      <span className="text-white/20 text-xs">
+                        {project.mockupCardUrl ? "✓ Card" : "— Card"}
+                        {" · "}
+                        {project.mockupHeroUrl ? "✓ Hero" : "— Hero"}
+                      </span>
                     </div>
                   </div>
 
@@ -533,14 +923,14 @@ export default function AdminProjects() {
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-white/10 flex-shrink-0">
+            <div className="flex border-b border-white/10 flex-shrink-0 overflow-x-auto">
               {TABS.map(tab => {
                 const Icon = tab.icon
                 return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-2 px-5 py-3.5 text-sm font-medium transition-all relative
+                    className={`flex items-center gap-2 px-5 py-3.5 text-sm font-medium transition-all relative whitespace-nowrap
                       ${activeTab === tab.id
                         ? "text-orange-400"
                         : "text-white/40 hover:text-white/70"}`}
@@ -630,9 +1020,11 @@ export default function AdminProjects() {
                     </Field>
                   </div>
 
-                  <Field label="Stack (tags separadas por vírgula)">
-                    <Input value={form.stackTags} onChange={v => setForm(f => ({ ...f, stackTags: v }))}
-                      placeholder="Next.js, Neon Postgres, Google Auth, Framer Motion" />
+                  <Field label="Stack Tecnológica">
+                    <StackPicker
+                      value={form.stackTags}
+                      onChange={v => setForm(f => ({ ...f, stackTags: v }))}
+                    />
                   </Field>
 
                   {/* Published toggle */}
@@ -748,62 +1140,87 @@ export default function AdminProjects() {
               {/* ── TAB: Mídia & Links ────────────── */}
               {activeTab === "media" && (
                 <>
-                  <div className="text-white/40 text-xs mb-2 flex items-center gap-2">
-                    <Image className="w-3.5 h-3.5" />
-                    Links e imagem de mockup do projeto.
+                  {/* Links section */}
+                  <div className="space-y-4 pb-5 border-b border-white/10">
+                    <p className="text-white/40 text-xs flex items-center gap-2">
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      Links do projeto
+                    </p>
+
+                    <Field label="URL do Projeto Ao Vivo">
+                      <div className="relative">
+                        <ExternalLink className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                        <input
+                          type="url"
+                          value={form.liveUrl}
+                          onChange={e => setForm(f => ({ ...f, liveUrl: e.target.value }))}
+                          placeholder="https://cliente.vercel.app"
+                          className="w-full bg-white/5 border border-white/10 text-white rounded-xl pl-10 pr-4 py-2.5
+                            outline-none focus:border-orange-500/50 placeholder-white/20 transition-all"
+                        />
+                      </div>
+                    </Field>
+
+                    <Field label="URL da Página de Case (interna)" hint="Deixe em branco para usar /cases/{slug} automaticamente.">
+                      <div className="relative">
+                        <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                        <input
+                          type="text"
+                          value={form.caseUrl}
+                          onChange={e => setForm(f => ({ ...f, caseUrl: e.target.value }))}
+                          placeholder={`/cases/${form.slug || "seu-projeto"}`}
+                          className="w-full bg-white/5 border border-white/10 text-white rounded-xl pl-10 pr-4 py-2.5
+                            outline-none focus:border-orange-500/50 placeholder-white/20 transition-all"
+                        />
+                      </div>
+                    </Field>
                   </div>
 
-                  <Field label="URL do Projeto Ao Vivo">
-                    <div className="relative">
-                      <ExternalLink className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                      <input
-                        type="url"
-                        value={form.liveUrl}
-                        onChange={e => setForm(f => ({ ...f, liveUrl: e.target.value }))}
-                        placeholder="https://cliente.vercel.app"
-                        className="w-full bg-white/5 border border-white/10 text-white rounded-xl pl-10 pr-4 py-2.5
-                          outline-none focus:border-orange-500/50 placeholder-white/20 transition-all"
+                  {/* ── Mockup images ── */}
+                  <div className="space-y-6 pt-1">
+                    <p className="text-white/40 text-xs flex items-center gap-2">
+                      <ImageIcon className="w-3.5 h-3.5" />
+                      Imagens de mockup (clique ou arraste para fazer upload)
+                    </p>
+
+                    {/* Mockup Card */}
+                    <div className="bg-white/[0.03] border border-white/10 rounded-xl p-5">
+                      <div className="flex items-center gap-2 mb-4">
+                        <span className="w-5 h-5 rounded-md bg-orange-500/20 border border-orange-500/30 flex items-center justify-center">
+                          <span className="text-[9px] font-bold text-orange-400">1</span>
+                        </span>
+                        <span className="text-xs font-semibold text-white/70 uppercase tracking-wider">
+                          Mockup do Card
+                        </span>
+                      </div>
+                      <ImageUploader
+                        label="Imagem do Card"
+                        description="Exibida no painel esquerdo do card na página /casos."
+                        aspectHint="Recomendado: qualquer proporção (min. 400px)"
+                        value={form.mockupCardUrl}
+                        onChange={url => setForm(f => ({ ...f, mockupCardUrl: url || "" }))}
                       />
                     </div>
-                  </Field>
 
-                  <Field label="URL da Página de Case (interna)" hint="Deixe em branco para usar /cases/{slug} automaticamente.">
-                    <div className="relative">
-                      <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                      <input
-                        type="text"
-                        value={form.caseUrl}
-                        onChange={e => setForm(f => ({ ...f, caseUrl: e.target.value }))}
-                        placeholder={`/cases/${form.slug || "seu-projeto"}`}
-                        className="w-full bg-white/5 border border-white/10 text-white rounded-xl pl-10 pr-4 py-2.5
-                          outline-none focus:border-orange-500/50 placeholder-white/20 transition-all"
+                    {/* Mockup Hero */}
+                    <div className="bg-white/[0.03] border border-white/10 rounded-xl p-5">
+                      <div className="flex items-center gap-2 mb-4">
+                        <span className="w-5 h-5 rounded-md bg-orange-500/20 border border-orange-500/30 flex items-center justify-center">
+                          <span className="text-[9px] font-bold text-orange-400">2</span>
+                        </span>
+                        <span className="text-xs font-semibold text-white/70 uppercase tracking-wider">
+                          Mockup do Hero (Case Study)
+                        </span>
+                      </div>
+                      <ImageUploader
+                        label="Imagem Hero"
+                        description="Exibida na área grande 16:9 no topo da página de case study (/cases/slug)."
+                        aspectHint="Recomendado: 16:9 (1280×720px)"
+                        value={form.mockupHeroUrl}
+                        onChange={url => setForm(f => ({ ...f, mockupHeroUrl: url || "" }))}
                       />
                     </div>
-                  </Field>
-
-                  <Field
-                    label="URL do Mockup / Imagem de Capa"
-                    hint="Cole a URL de uma imagem hospedada (Google Cloud, Imgur, etc.) ou suba via painel."
-                  >
-                    <Textarea
-                      value={form.mockupUrl || ""}
-                      onChange={v => setForm(f => ({ ...f, mockupUrl: v }))}
-                      placeholder="https://storage.googleapis.com/.../mockup.png"
-                      rows={2}
-                    />
-                  </Field>
-
-                  {/* Mockup preview */}
-                  {form.mockupUrl && (
-                    <div className="rounded-xl overflow-hidden border border-white/10 aspect-video bg-white/5">
-                      <img
-                        src={form.mockupUrl}
-                        alt="Mockup preview"
-                        className="w-full h-full object-cover"
-                        onError={e => { (e.target as HTMLImageElement).style.display = "none" }}
-                      />
-                    </div>
-                  )}
+                  </div>
                 </>
               )}
             </div>

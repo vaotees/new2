@@ -1,19 +1,48 @@
 'use client'
 
 import Head from 'next/head'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import {
   ArrowRight,
   ArrowLeft,
   ExternalLink,
   Building2,
-  Layers,
-  Server,
-  ShieldCheck,
-  Cloud,
   MessageSquare,
+  Loader2,
 } from 'lucide-react'
 import Navbar from '@/components/Navbar'
+import { findStack } from '@/lib/stackLibrary'
+import * as LucideIcons from 'lucide-react'
+
+/* ─────────────────────────────────────────────
+   Types
+───────────────────────────────────────────── */
+interface Highlight {
+  id: string
+  iconName: string
+  title: string
+  body: string
+  order: number
+}
+
+interface Project {
+  id: string
+  slug: string
+  clientName: string
+  tagline: string
+  category: string
+  description: string
+  role: string
+  status: string
+  year: string
+  liveUrl: string
+  caseUrl: string
+  stackTags: string
+  mockupCardUrl: string | null
+  published: boolean
+  highlights: Highlight[]
+}
 
 /* ─────────────────────────────────────────────
    Animation Variants
@@ -32,48 +61,13 @@ const stagger = {
 }
 
 /* ─────────────────────────────────────────────
-   Data – Cases
-───────────────────────────────────────────── */
-const cases = [
-  {
-    id: 'cm-imoveis',
-    href: '/cases/cm-imoveis',
-    liveUrl: 'https://cm-imoveis.vercel.app/',
-    category: 'Plataforma Imobiliária',
-    name: 'CM Imóveis',
-    tagline: 'Full-Stack & CRM',
-    description:
-      'Portal imobiliário completo com busca inteligente, painel CMS/CRM privado, SEO dinâmico via Open Graph e suporte nativo a Dark Mode — tudo serverless e proprietário.',
-    role: 'Senior Design Engineer (UI/UX, Front-end & Back-end)',
-    status: 'Em Produção',
-    year: '2024',
-    gradient: 'from-orange/20 via-orange/5 to-transparent',
-    accentColor: 'text-orange',
-    borderColor: 'border-orange/20',
-    tags: ['Next.js 14', 'Neon Postgres', 'Google Auth', 'Framer Motion', 'Vercel'],
-    stack: [
-      { icon: <Layers size={14} />, label: 'Next.js 14 App Router' },
-      { icon: <Server size={14} />, label: 'Neon Serverless Postgres' },
-      { icon: <ShieldCheck size={14} />, label: 'NextAuth Google OAuth' },
-      { icon: <Cloud size={14} />, label: 'Google Cloud Storage' },
-    ],
-    highlights: [
-      'Autocomplete dinâmico interconectado ao banco de dados',
-      'Painel CMS/CRM protegido por autenticação Google',
-      'Open Graph Tags automáticas para WhatsApp',
-      'Glassmorphism + Dark Mode nativo',
-    ],
-    // Placeholder enquanto não há mockup real
-    mockup: null,
-    index: 1,
-  },
-]
-
-/* ─────────────────────────────────────────────
    Case Card Component
 ───────────────────────────────────────────── */
-function CaseCard({ c, idx }: { c: typeof cases[0]; idx: number }) {
+function CaseCard({ project, idx }: { project: Project; idx: number }) {
   const isEven = idx % 2 === 0
+  const tags = project.stackTags ? project.stackTags.split(',').map(t => t.trim()).filter(Boolean) : []
+  const caseHref = project.caseUrl || `/cases/${project.slug}`
+  const liveUrl = project.liveUrl
 
   return (
     <motion.article
@@ -88,7 +82,7 @@ function CaseCard({ c, idx }: { c: typeof cases[0]; idx: number }) {
       {/* ── Visual Panel ───────────────────────── */}
       <motion.div
         variants={fadeIn}
-        className={`relative overflow-hidden min-h-[280px] lg:min-h-[420px] flex items-center justify-center bg-gradient-to-br ${c.gradient} ${
+        className={`relative overflow-hidden min-h-[280px] lg:min-h-[420px] flex items-center justify-center bg-gradient-to-br from-orange/20 via-orange/5 to-transparent ${
           isEven ? '' : 'lg:[direction:ltr]'
         }`}
       >
@@ -110,27 +104,37 @@ function CaseCard({ c, idx }: { c: typeof cases[0]; idx: number }) {
 
         {/* Case number watermark */}
         <span className="absolute top-6 left-7 text-[80px] font-black text-white/[0.03] leading-none select-none pointer-events-none">
-          {String(c.index).padStart(2, '0')}
+          {String(idx + 1).padStart(2, '0')}
         </span>
 
-        {/* Mockup placeholder / real mockup */}
-        <div className="relative z-10 flex flex-col items-center gap-4 p-10">
-          <div className="w-16 h-16 rounded-2xl glass-panel border border-orange/25 flex items-center justify-center mb-2">
-            <Building2 size={28} className="text-orange" />
-          </div>
-          <span className="text-xs font-semibold text-orange uppercase tracking-[0.2em]">
-            {c.category}
-          </span>
-          <p className="text-foreground-subtle text-xs text-center max-w-[180px]">
-            Insira o mockup do projeto aqui
-          </p>
+        {/* Mockup image or placeholder */}
+        <div className="relative z-10 flex flex-col items-center gap-4 p-10 w-full h-full">
+          {project.mockupCardUrl ? (
+            <img
+              src={project.mockupCardUrl}
+              alt={`Mockup ${project.clientName}`}
+              className="w-full h-full object-contain max-h-80 drop-shadow-2xl"
+            />
+          ) : (
+            <>
+              <div className="w-16 h-16 rounded-2xl glass-panel border border-orange/25 flex items-center justify-center mb-2">
+                <Building2 size={28} className="text-orange" />
+              </div>
+              <span className="text-xs font-semibold text-orange uppercase tracking-[0.2em]">
+                {project.category}
+              </span>
+              <p className="text-foreground-subtle text-xs text-center max-w-[180px]">
+                Mockup em breve
+              </p>
+            </>
+          )}
         </div>
 
         {/* Live badge */}
         <div className="absolute bottom-5 right-5">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold bg-orange/15 border border-orange/30 text-orange">
             <span className="w-1.5 h-1.5 rounded-full bg-orange animate-pulse-slow" />
-            {c.status}
+            {project.status}
           </span>
         </div>
       </motion.div>
@@ -144,58 +148,77 @@ function CaseCard({ c, idx }: { c: typeof cases[0]; idx: number }) {
         <div>
           <motion.div variants={fadeInUp} className="flex items-center gap-3 mb-5">
             <span className="text-xs font-bold uppercase tracking-[0.2em] text-foreground-subtle">
-              {c.year}
+              {project.year}
             </span>
             <span className="w-1 h-1 rounded-full bg-foreground-subtle" />
             <span className="text-xs font-bold uppercase tracking-[0.2em] text-foreground-subtle">
-              {c.role.split('(')[0].trim()}
+              {project.role.split('(')[0].trim()}
             </span>
           </motion.div>
 
           <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-black text-foreground leading-tight mb-1">
-            {c.name}
+            {project.clientName}
           </motion.h2>
           <motion.p variants={fadeInUp} className="text-lg font-semibold text-orange-gradient mb-5">
-            {c.tagline}
+            {project.tagline}
           </motion.p>
 
           <motion.p variants={fadeInUp} className="text-foreground-muted leading-relaxed text-sm md:text-base">
-            {c.description}
+            {project.description}
           </motion.p>
         </div>
 
         {/* Highlights */}
-        <motion.ul variants={stagger} className="space-y-2.5">
-          {c.highlights.map((h) => (
-            <motion.li
-              key={h}
-              variants={fadeInUp}
-              className="flex items-start gap-2.5 text-sm text-foreground-muted"
-            >
-              <span className="w-4 h-4 rounded-full bg-orange/15 border border-orange/25 flex items-center justify-center shrink-0 mt-0.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-orange" />
-              </span>
-              {h}
-            </motion.li>
-          ))}
-        </motion.ul>
+        {project.highlights?.length > 0 && (
+          <motion.ul variants={stagger} className="space-y-2.5">
+            {project.highlights.map((h) => {
+              const Icon = (LucideIcons as any)[h.iconName] || LucideIcons.Zap
+              return (
+                <motion.li
+                  key={h.id}
+                  variants={fadeInUp}
+                  className="flex items-start gap-2.5 text-sm text-foreground-muted"
+                >
+                  <span className="w-4 h-4 rounded-full bg-orange/15 border border-orange/25 flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-orange" />
+                  </span>
+                  {h.title || h.body}
+                </motion.li>
+              )
+            })}
+          </motion.ul>
+        )}
 
         {/* Stack tags */}
-        <motion.div variants={fadeInUp} className="flex flex-wrap gap-2">
-          {c.tags.map((tag) => (
-            <span
-              key={tag}
-              className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold bg-surface-raised border border-border text-foreground-muted"
-            >
-              {tag}
-            </span>
-          ))}
-        </motion.div>
+        {tags.length > 0 && (
+          <motion.div variants={fadeInUp} className="flex flex-wrap gap-2">
+            {tags.map((tag) => {
+              const def = findStack(tag)
+              return (
+                <span
+                  key={tag}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px]
+                    font-semibold bg-surface-raised border border-border text-foreground-muted"
+                >
+                  {def && (
+                    <span
+                      className="w-4 h-4 rounded text-[8px] font-bold flex items-center justify-center flex-shrink-0"
+                      style={{ background: def.color, color: def.fg }}
+                    >
+                      {def.abbr}
+                    </span>
+                  )}
+                  {tag}
+                </span>
+              )
+            })}
+          </motion.div>
+        )}
 
         {/* CTAs */}
         <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-3">
           <motion.a
-            href={c.href}
+            href={caseHref}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             className="btn-orange px-6 py-3 text-sm font-bold inline-flex items-center justify-center gap-2 rounded-full"
@@ -203,17 +226,19 @@ function CaseCard({ c, idx }: { c: typeof cases[0]; idx: number }) {
             Ver Case Completo
             <ArrowRight size={14} />
           </motion.a>
-          <motion.a
-            href={c.liveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-bold rounded-full border border-border text-foreground-muted hover:text-foreground hover:border-orange/40 transition-all duration-200"
-          >
-            Ver ao Vivo
-            <ExternalLink size={13} />
-          </motion.a>
+          {liveUrl && (
+            <motion.a
+              href={liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-bold rounded-full border border-border text-foreground-muted hover:text-foreground hover:border-orange/40 transition-all duration-200"
+            >
+              Ver ao Vivo
+              <ExternalLink size={13} />
+            </motion.a>
+          )}
         </motion.div>
       </motion.div>
     </motion.article>
@@ -224,6 +249,19 @@ function CaseCard({ c, idx }: { c: typeof cases[0]; idx: number }) {
    Page
 ───────────────────────────────────────────── */
 export default function CasosPage() {
+  const [projects, setProjects] = useState<Project[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch('/api/projects')
+      .then((r) => r.json())
+      .then((data: Project[]) => {
+        setProjects(data.filter((p) => p.published))
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
+  }, [])
+
   return (
     <>
       <Head>
@@ -333,38 +371,57 @@ export default function CasosPage() {
         ═══════════════════════════════════════ */}
         <section className="py-12 pb-32">
           <div className="max-w-7xl mx-auto px-6 flex flex-col gap-10">
-            {cases.map((c, idx) => (
-              <CaseCard key={c.id} c={c} idx={idx} />
+
+            {/* Loading state */}
+            {loading && (
+              <div className="flex items-center justify-center py-24">
+                <Loader2 className="w-8 h-8 animate-spin text-orange opacity-60" />
+              </div>
+            )}
+
+            {/* Projects */}
+            {!loading && projects.map((project, idx) => (
+              <CaseCard key={project.id} project={project} idx={idx} />
             ))}
 
+            {/* Empty state */}
+            {!loading && projects.length === 0 && (
+              <div className="text-center py-20 text-foreground-muted">
+                <Building2 className="w-10 h-10 mx-auto mb-4 opacity-30" />
+                <p>Nenhum projeto publicado ainda.</p>
+              </div>
+            )}
+
             {/* ── Coming Soon placeholder ─── */}
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: '-40px' }}
-              variants={fadeInUp}
-              className="rounded-3xl border border-dashed border-border glass-panel p-12 md:p-16 flex flex-col items-center justify-center text-center gap-5 min-h-[240px]"
-            >
-              <div className="w-12 h-12 rounded-2xl glass-panel border border-border flex items-center justify-center">
-                <Building2 size={20} className="text-foreground-subtle" />
-              </div>
-              <div>
-                <p className="text-foreground font-semibold mb-1">Novos cases em breve</p>
-                <p className="text-foreground-subtle text-sm max-w-sm">
-                  Estamos documentando mais projetos. Enquanto isso, entre em contato para
-                  conhecer nosso portfólio completo.
-                </p>
-              </div>
-              <motion.a
-                href="/#contact"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-border text-foreground-muted hover:text-foreground hover:border-orange/40 text-sm font-semibold transition-all duration-200"
+            {!loading && (
+              <motion.div
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: '-40px' }}
+                variants={fadeInUp}
+                className="rounded-3xl border border-dashed border-border glass-panel p-12 md:p-16 flex flex-col items-center justify-center text-center gap-5 min-h-[240px]"
               >
-                <MessageSquare size={14} />
-                Falar com um Especialista
-              </motion.a>
-            </motion.div>
+                <div className="w-12 h-12 rounded-2xl glass-panel border border-border flex items-center justify-center">
+                  <Building2 size={20} className="text-foreground-subtle" />
+                </div>
+                <div>
+                  <p className="text-foreground font-semibold mb-1">Novos cases em breve</p>
+                  <p className="text-foreground-subtle text-sm max-w-sm">
+                    Estamos documentando mais projetos. Enquanto isso, entre em contato para
+                    conhecer nosso portfólio completo.
+                  </p>
+                </div>
+                <motion.a
+                  href="/#contact"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-border text-foreground-muted hover:text-foreground hover:border-orange/40 text-sm font-semibold transition-all duration-200"
+                >
+                  <MessageSquare size={14} />
+                  Falar com um Especialista
+                </motion.a>
+              </motion.div>
+            )}
           </div>
         </section>
 

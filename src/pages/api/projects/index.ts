@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const {
         slug, category, clientName, tagline, description, role,
-        status, year, liveUrl, caseUrl, mockupUrl, stackTags,
+        status, year, liveUrl, caseUrl, mockupCardUrl, mockupHeroUrl, stackTags,
         challengeText, solutionText, impactText, published, highlights
       } = req.body
 
@@ -49,7 +49,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           year: year || new Date().getFullYear().toString(),
           liveUrl: liveUrl || "",
           caseUrl: caseUrl || "",
-          mockupUrl: mockupUrl || null,
+          mockupCardUrl: mockupCardUrl || null,
+          mockupHeroUrl: mockupHeroUrl || null,
           stackTags: stackTags || "",
           challengeText: challengeText || "",
           solutionText: solutionText || "",

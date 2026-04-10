@@ -7,8 +7,9 @@ import ThemeToggle from './ThemeToggle'
 
 const defaultNavLinks = [
   { href: '#services', label: 'Serviços' },
-  { href: '#testimonials', label: 'Cases' },
+  { href: '#testimonials', label: 'Depoimentos' },
   { href: '#contact', label: 'Contato' },
+  { href: '/casos', label: 'Cases' },
 ]
 
 export interface NavbarProps {

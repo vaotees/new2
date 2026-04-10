@@ -27,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const {
         slug, category, clientName, tagline, description, role,
-        status, year, liveUrl, caseUrl, mockupUrl, stackTags,
+        status, year, liveUrl, caseUrl, mockupCardUrl, mockupHeroUrl, stackTags,
         challengeText, solutionText, impactText, published, highlights
       } = req.body
 
@@ -38,7 +38,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           slug: slug?.toLowerCase().replace(/\s+/g, "-"),
           category, clientName, tagline, description, role,
           status, year, liveUrl, caseUrl,
-          mockupUrl: mockupUrl || null,
+          mockupCardUrl: mockupCardUrl || null,
+          mockupHeroUrl: mockupHeroUrl || null,
           stackTags, challengeText, solutionText, impactText,
           published: published !== false,
         },

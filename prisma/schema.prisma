@@ -132,7 +132,8 @@ model ClientProject {
   year        String   @default("")
   liveUrl     String   @default("")
   caseUrl     String   @default("")
-  mockupUrl   String?  @db.Text
+  mockupCardUrl  String?  @db.Text   // Card left-panel in /casos
+  mockupHeroUrl  String?  @db.Text   // 16:9 hero in /cases/[slug]
   stackTags   String   @default("")
   challengeText  String @db.Text @default("")
   solutionText   String @db.Text @default("")
