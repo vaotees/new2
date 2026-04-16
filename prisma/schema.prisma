@@ -153,3 +153,35 @@ model ClientProjectHighlight {
   body       String        @db.Text @default("")
   order      Int           @default(0)
 }
+
+// ─── SEO Configuration ────────────────────────────────
+
+model SeoConfig {
+  id              String   @id @default("singleton")
+  siteTitle       String   @default("EM Soluções Digitais | Agência Digital Premium")
+  metaDescription String   @default("Estratégia, design e tecnologia de ponta para posicionar seu negócio como referência no mercado digital.")
+  ogImage         String   @default("")
+  keywords        String   @default("agência digital, websites, marketing digital, tráfego pago, automação")
+  canonicalUrl    String   @default("")
+  robotsIndex     Boolean  @default(true)
+  updatedAt       DateTime @updatedAt
+}
+
+// ─── CRM — Leads ──────────────────────────────────────
+
+model Lead {
+  id          String   @id @default(cuid())
+  source      String   @default("form")       // "form" | "whatsapp" | "manual"
+  status      String   @default("new")        // "new" | "contacted" | "proposal" | "closed" | "lost"
+  name        String
+  email       String
+  whatsapp    String   @default("")
+  location    String   @default("")
+  service     String   @default("")
+  message     String   @db.Text @default("")
+  notes       String   @db.Text @default("")  // Admin internal notes
+  replied     Boolean  @default(false)
+  repliedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

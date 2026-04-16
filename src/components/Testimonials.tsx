@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { TestimonialCard } from './TestimonialCard'
+import TechCanvas from './TechCanvas'
 
 export interface CMSTestimonial {
   id: string
@@ -83,7 +84,10 @@ export default function Testimonials({ cmsTestimonials, sectionConfig }: Testimo
   }
 
   return (
-    <section id="testimonials" className="py-24 relative">
+    <section id="testimonials" className="py-24 relative overflow-hidden">
+      {/* Tech canvas background */}
+      <TechCanvas mode="subtle" />
+
       <div
         className="absolute inset-0 pointer-events-none"
         style={{

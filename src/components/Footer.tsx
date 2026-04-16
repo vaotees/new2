@@ -2,6 +2,7 @@
 
 import { Instagram, Facebook, Mail, Phone, MapPin } from 'lucide-react'
 import ContactForm from './ContactForm'
+import TechCanvas from './TechCanvas'
 
 interface FooterLink {
   text: string;
@@ -46,7 +47,10 @@ export default function Footer({
   copyrightText = '© 2026 EM Soluções Digitais. Todos os direitos reservados.'
 }: FooterProps) {
   return (
-    <footer id="contact" className="bg-surface border-t border-border-subtle">
+    <footer id="contact" className="bg-surface border-t border-border-subtle relative overflow-hidden">
+      {/* Tech canvas over full footer */}
+      <TechCanvas mode="subtle" />
+
       {/* CTA Banner / Contact Form Section */}
       <div className="relative overflow-hidden">
         <div

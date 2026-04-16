@@ -4,10 +4,25 @@ import { motion } from 'framer-motion'
 import {
   Palette, Code2, TrendingUp, Target, Share2, BarChart3,
   Check, Star, Zap, Globe, Shield, Rocket, Cpu, Users,
-  BarChart2, Award, Lightbulb, Lock, Layers, LucideIcon
+  BarChart2, Award, Lightbulb, Lock, Layers, LucideIcon,
+  Megaphone, Bot, Camera, FileText, ShoppingCart, Heart,
+  Settings, Database, Cloud, Smartphone, Mail, Search,
+  ChartBar, PieChart, LineChart, DollarSign, Briefcase,
+  Building, Map, Link, Video, Music, Image, Play,
 } from 'lucide-react'
-import * as LucideIcons from 'lucide-react'
 import { FeatureCard } from './FeatureCard'
+import TechCanvas from './TechCanvas'
+
+// Static icon map replaces `import * as LucideIcons` (which bundles all ~1000 icons)
+const ICON_MAP: Record<string, LucideIcon> = {
+  Palette, Code2, TrendingUp, Target, Share2, BarChart3,
+  Check, Star, Zap, Globe, Shield, Rocket, Cpu, Users,
+  BarChart2, Award, Lightbulb, Lock, Layers,
+  Megaphone, Bot, Camera, FileText, ShoppingCart, Heart,
+  Settings, Database, Cloud, Smartphone, Mail, Search,
+  ChartBar: BarChart3, PieChart, LineChart, DollarSign, Briefcase,
+  Building, Map, Link, Video, Music, Image, Play,
+}
 
 export interface CMSFeature {
   id: string
@@ -87,7 +102,10 @@ export default function FeaturesGrid({ cmsFeatures, sectionConfig }: FeaturesGri
   };
 
   return (
-    <section id="services" className="py-24 relative">
+    <section id="services" className="py-24 relative overflow-hidden">
+      {/* Tech canvas background */}
+      <TechCanvas mode="subtle" />
+
       {/* Section glow */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -128,8 +146,8 @@ export default function FeaturesGrid({ cmsFeatures, sectionConfig }: FeaturesGri
         >
           {itemsToRender.map((service: any) => {
             const IconComp = typeof service.icon === 'string'
-              ? (LucideIcons as any)[service.icon] || LucideIcons.Check
-              : service.icon
+              ? (ICON_MAP[service.icon] || Check)
+              : (service.icon as LucideIcon)
 
             return (
               <FeatureCard

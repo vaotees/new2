@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/router"
 import { useEffect, ReactNode } from "react"
-import { LayoutDashboard, Sparkles, ListChecks, MessageSquare, FolderKanban, LogOut } from "lucide-react"
+import { LayoutDashboard, Sparkles, ListChecks, MessageSquare, FolderKanban, LogOut, Search, Users } from "lucide-react"
 
 interface AdminLayoutProps {
   children: ReactNode
@@ -13,6 +13,8 @@ const navItems = [
   { href: "/admin/features", label: "Serviços", icon: ListChecks },
   { href: "/admin/testimonials", label: "Depoimentos", icon: MessageSquare },
   { href: "/admin/projects", label: "Projetos de Clientes", icon: FolderKanban },
+  { href: "/admin/seo", label: "SEO", icon: Search },
+  { href: "/admin/crm", label: "CRM / Leads", icon: Users },
 ]
 
 export default function AdminLayout({ children }: AdminLayoutProps) {

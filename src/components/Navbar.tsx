@@ -50,6 +50,7 @@ export default function Navbar({
               src="/logo-brand.png" 
               alt="EM Soluções Digitais" 
               className="h-10 md:h-12 w-auto drop-shadow-md transition-transform group-hover:scale-105"
+              loading="eager"
             />
           </a>
 

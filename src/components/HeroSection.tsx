@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, Play, Star } from 'lucide-react'
 import { Button } from './Button'
+import TechCanvas from './TechCanvas'
 
 export interface SectionHeroConfig {
   badge: string
@@ -57,6 +58,9 @@ export default function HeroSection({ sectionConfig }: HeroSectionProps) {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Tech particle canvas — responds to mouse */}
+      <TechCanvas mode="hero" />
+
       {/* Background radial glow */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -210,6 +214,7 @@ export default function HeroSection({ sectionConfig }: HeroSectionProps) {
                     src={src}
                     alt={`Cliente ${i + 1}`}
                     className="w-full h-full object-cover"
+                    loading="lazy"
                   />
                 </motion.div>
               ))}
