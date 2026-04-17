@@ -32,7 +32,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const {
         slug, category, clientName, tagline, description, role,
         status, year, liveUrl, caseUrl, mockupCardUrl, mockupHeroUrl, stackTags,
-        challengeText, solutionText, impactText, published, highlights
+        challengeText, solutionText, impactText, published, highlights,
+        brandGuidelinesUrl, logoUrl, logoDownloadUrl, brandColors,
+        brandFontHeading, brandFontBody
       } = req.body
 
       // Update project fields — only include defined fields to avoid overwriting with undefined
@@ -55,6 +57,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           ...(challengeText !== undefined && { challengeText }),
           ...(solutionText !== undefined && { solutionText }),
           ...(impactText !== undefined && { impactText }),
+          ...(brandGuidelinesUrl !== undefined && { brandGuidelinesUrl }),
+          ...(logoUrl !== undefined && { logoUrl }),
+          ...(logoDownloadUrl !== undefined && { logoDownloadUrl }),
+          ...(brandColors !== undefined && { brandColors }),
+          ...(brandFontHeading !== undefined && { brandFontHeading }),
+          ...(brandFontBody !== undefined && { brandFontBody }),
           ...(published !== undefined && { published: published !== false }),
         },
       })

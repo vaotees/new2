@@ -1,7 +1,8 @@
 import AdminLayout from '../../components/AdminLayout'
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Search, Globe, Image, Tag, Link2, Bot, Save, Eye, RefreshCw, CheckCircle2 } from 'lucide-react'
+import { Search, Globe, Tag, Link2, Bot, Save, Eye, RefreshCw, CheckCircle2, BarChart2 } from 'lucide-react'
+import ImageUploader from '../../components/ImageUploader'
 
 interface SeoForm {
   siteTitle: string
@@ -10,6 +11,7 @@ interface SeoForm {
   keywords: string
   canonicalUrl: string
   robotsIndex: boolean
+  googleAnalyticsId: string
 }
 
 const defaultForm: SeoForm = {
@@ -19,6 +21,7 @@ const defaultForm: SeoForm = {
   keywords: 'agência digital, websites, marketing digital, tráfego pago, automação',
   canonicalUrl: '',
   robotsIndex: true,
+  googleAnalyticsId: '',
 }
 
 export default function AdminSEO() {
@@ -153,19 +156,23 @@ export default function AdminSEO() {
 
             {/* OG Image */}
             <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-              <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/50 mb-3">
-                <Image size={13} /> OG Image (URL)
+              <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/50 mb-4">
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <circle cx="8.5" cy="8.5" r="1.5" />
+                  <polyline points="21 15 16 10 5 21" />
+                </svg>
+                OG Image
               </label>
-              <input
-                name="ogImage"
-                value={form.ogImage}
-                onChange={handleChange}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/30 transition-all"
-                placeholder="https://seusite.com/og-image.jpg (1200×630px recomendado)"
+              <ImageUploader
+                description="Imagem exibida ao compartilhar o site no WhatsApp, redes sociais e Google. Recomendado: 1200×630px."
+                aspectHint="1200×630px"
+                value={form.ogImage || null}
+                onChange={url => {
+                  setForm(prev => ({ ...prev, ogImage: url || '' }))
+                  setSaved(false)
+                }}
               />
-              {form.ogImage && (
-                <img src={form.ogImage} alt="OG Preview" className="mt-3 rounded-lg w-full object-cover h-24 border border-white/10" />
-              )}
             </div>
 
             {/* Keywords */}
@@ -188,6 +195,32 @@ export default function AdminSEO() {
                   </span>
                 ))}
               </div>
+            </div>
+
+            {/* Google Analytics */}
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+              <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/50 mb-3">
+                <BarChart2 size={13} /> Google Analytics 4
+              </label>
+              <div className="relative">
+                <input
+                  name="googleAnalyticsId"
+                  value={form.googleAnalyticsId}
+                  onChange={handleChange}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/30 transition-all font-mono"
+                  placeholder="G-XXXXXXXXXX"
+                />
+              </div>
+              <p className="mt-2 text-xs text-white/30">Measurement ID do GA4 — encontrado em Admin › Data Streams</p>
+              {form.googleAnalyticsId && (
+                <div className={`mt-2 flex items-center gap-1.5 text-xs font-semibold ${
+                  /^G-[A-Z0-9]{6,}$/.test(form.googleAnalyticsId) ? 'text-green-400' : 'text-yellow-400'
+                }`}>
+                  {/^G-[A-Z0-9]{6,}$/.test(form.googleAnalyticsId)
+                    ? '✓ Formato válido — rastreamento ativo no próximo deploy'
+                    : '⚠ Formato esperado: G-XXXXXXXXXX'}
+                </div>
+              )}
             </div>
 
             {/* Canonical + Robots */}
@@ -293,6 +326,7 @@ export default function AdminSEO() {
                     { label: 'Keywords', ok: form.keywords.split(',').filter(k => k.trim()).length >= 3 },
                     { label: 'URL Canônica', ok: !!form.canonicalUrl },
                     { label: 'Robots Index', ok: form.robotsIndex },
+                    { label: 'Google Analytics', ok: /^G-[A-Z0-9]{6,}$/.test(form.googleAnalyticsId) },
                   ].map(item => (
                     <div key={item.label} className="flex items-center justify-between mb-2">
                       <span className="text-sm text-white/60">{item.label}</span>
@@ -308,7 +342,7 @@ export default function AdminSEO() {
                       className="h-1.5 rounded-full bg-gradient-to-r from-orange-500 to-orange-400 transition-all duration-700"
                       style={{
                         width: `${Math.round(
-                          ([titleLen >= 30 && titleLen <= 60, descLen >= 100 && descLen <= 160, !!form.ogImage, form.keywords.split(',').filter(k => k.trim()).length >= 3, !!form.canonicalUrl, form.robotsIndex].filter(Boolean).length / 6) * 100
+                          ([titleLen >= 30 && titleLen <= 60, descLen >= 100 && descLen <= 160, !!form.ogImage, form.keywords.split(',').filter(k => k.trim()).length >= 3, !!form.canonicalUrl, form.robotsIndex, /^G-[A-Z0-9]{6,}$/.test(form.googleAnalyticsId)].filter(Boolean).length / 7) * 100
                         )}%`
                       }}
                     />

@@ -138,6 +138,13 @@ model ClientProject {
   challengeText  String @db.Text @default("")
   solutionText   String @db.Text @default("")
   impactText     String @db.Text @default("")
+  // Brand / Identity fields
+  brandGuidelinesUrl String @default("")          // External brand guidelines URL
+  logoUrl            String @db.Text @default("") // Primary logo image URL
+  logoDownloadUrl    String @default("")          // SVG download URL
+  brandColors        String @db.Text @default("") // JSON array of { name, hex, fg }
+  brandFontHeading   String @default("Playfair Display") // Heading / display font
+  brandFontBody      String @default("Montserrat")       // Body / UI font
   highlights  ClientProjectHighlight[]
   published   Boolean  @default(true)
   createdAt   DateTime @default(now())
@@ -157,14 +164,15 @@ model ClientProjectHighlight {
 // ─── SEO Configuration ────────────────────────────────
 
 model SeoConfig {
-  id              String   @id @default("singleton")
-  siteTitle       String   @default("EM Soluções Digitais | Agência Digital Premium")
-  metaDescription String   @default("Estratégia, design e tecnologia de ponta para posicionar seu negócio como referência no mercado digital.")
-  ogImage         String   @default("")
-  keywords        String   @default("agência digital, websites, marketing digital, tráfego pago, automação")
-  canonicalUrl    String   @default("")
-  robotsIndex     Boolean  @default(true)
-  updatedAt       DateTime @updatedAt
+  id                String   @id @default("singleton")
+  siteTitle         String   @default("EM Soluções Digitais | Agência Digital Premium")
+  metaDescription   String   @default("Estratégia, design e tecnologia de ponta para posicionar seu negócio como referência no mercado digital.")
+  ogImage           String   @default("")
+  keywords          String   @default("agência digital, websites, marketing digital, tráfego pago, automação")
+  canonicalUrl      String   @default("")
+  robotsIndex       Boolean  @default(true)
+  googleAnalyticsId String   @default("")   // GA4 Measurement ID (G-XXXXXXXXXX)
+  updatedAt         DateTime @updatedAt
 }
 
 // ─── CRM — Leads ──────────────────────────────────────

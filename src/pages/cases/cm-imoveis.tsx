@@ -1,6 +1,7 @@
 'use client'
 
 import Head from 'next/head'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import {
   Search,
@@ -109,14 +110,255 @@ const caseNavLinks = [
   { href: '#desafio', label: 'Desafio' },
   { href: '#stack', label: 'Stack' },
   { href: '#destaques', label: 'Destaques' },
+  { href: '#brand', label: 'Brand' },
 ]
+
+/* ─────────────────────────────────────────────
+   Brand Sub-Components
+───────────────────────────────────────────── */
+
+function BrandSwatch({ name, hex, fg = '#ffffff' }: { name: string; hex: string; fg?: string }) {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = () => {
+    if (typeof navigator !== 'undefined') {
+      navigator.clipboard.writeText(hex).catch(() => {})
+    }
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1500)
+  }
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="flex flex-col items-center gap-2 group w-full"
+      title={`Copiar ${hex}`}
+    >
+      <div
+        className="w-full aspect-square rounded-2xl transition-all duration-200 group-hover:scale-105 group-hover:shadow-lg flex items-center justify-center"
+        style={{ background: hex, boxShadow: copied ? `0 0 0 3px ${hex}40` : undefined }}
+      >
+        {copied && (
+          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke={fg} strokeWidth={2.5}>
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        )}
+      </div>
+      <div className="text-center">
+        <p className="text-[11px] font-semibold text-foreground leading-tight">{name}</p>
+        <p className="text-[10px] font-mono text-foreground-subtle">{copied ? 'Copiado!' : hex}</p>
+      </div>
+    </button>
+  )
+}
+
+const WIREFRAME_TABS = [
+  { id: 'home', label: 'Home' },
+  { id: 'listing', label: 'Listagem' },
+  { id: 'detail', label: 'Detalhe' },
+  { id: 'contact', label: 'Contato' },
+  { id: 'admin', label: 'Admin' },
+]
+
+function BrandWireframes() {
+  const [activeWf, setActiveWf] = useState('home')
+
+  const wireframeContent: Record<string, React.ReactNode> = {
+    home: (
+      <div className="space-y-3">
+        {/* Navbar placeholder */}
+        <div className="flex items-center justify-between px-4 py-2.5 rounded-xl" style={{ background: 'rgba(85,51,152,0.12)', border: '1px solid rgba(85,51,152,0.2)' }}>
+          <div className="w-20 h-4 rounded" style={{ background: 'rgba(85,51,152,0.3)' }} />
+          <div className="flex gap-2">
+            {[1,2,3].map(i => <div key={i} className="w-12 h-3 rounded" style={{ background: 'rgba(255,255,255,0.1)' }} />)}
+            <div className="w-20 h-6 rounded-full" style={{ background: 'linear-gradient(135deg,#dd5289,#553398)' }} />
+          </div>
+        </div>
+        {/* Hero */}
+        <div className="rounded-xl p-6 min-h-[120px] flex flex-col gap-3 justify-center" style={{ background: 'linear-gradient(135deg, rgba(85,51,152,0.15), rgba(221,82,137,0.08))' }}>
+          <div className="w-3/4 h-6 rounded" style={{ background: 'rgba(255,255,255,0.12)' }} />
+          <div className="w-1/2 h-4 rounded" style={{ background: 'rgba(255,255,255,0.08)' }} />
+          {/* Search bar */}
+          <div className="mt-2 flex gap-2">
+            <div className="flex-1 h-9 rounded-xl" style={{ background: 'rgba(85,51,152,0.2)', border: '1px solid rgba(85,51,152,0.3)' }} />
+            <div className="w-20 h-9 rounded-xl" style={{ background: 'linear-gradient(135deg,#dd5289,#553398)' }} />
+          </div>
+        </div>
+        {/* Featured cards */}
+        <div className="grid grid-cols-3 gap-2">
+          {[1,2,3].map(i => (
+            <div key={i} className="rounded-xl overflow-hidden" style={{ border: '1px solid rgba(85,51,152,0.15)' }}>
+              <div className="h-20" style={{ background: `linear-gradient(135deg, rgba(${85+i*30},51,152,0.2), rgba(221,82,137,0.1))` }} />
+              <div className="p-2 space-y-1">
+                <div className="h-2.5 w-3/4 rounded" style={{ background: 'rgba(255,255,255,0.1)' }} />
+                <div className="h-2 w-1/2 rounded" style={{ background: 'rgba(255,255,255,0.06)' }} />
+                <div className="h-3 w-1/3 rounded" style={{ background: 'linear-gradient(90deg,#e9a86b,#dd5289)' }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ),
+    listing: (
+      <div className="space-y-2">
+        {/* Filter bar */}
+        <div className="flex gap-2 flex-wrap">
+          {['Tipo','Quartos','Preço','Bairro','Área'].map(f => (
+            <div key={f} className="px-3 py-1.5 rounded-full text-[10px] font-semibold" style={{ background: 'rgba(85,51,152,0.12)', border: '1px solid rgba(85,51,152,0.2)', color: '#a07fcc' }}>{f}</div>
+          ))}
+        </div>
+        {/* List items */}
+        {[1,2,3,4].map(i => (
+          <div key={i} className="flex gap-3 rounded-xl p-3" style={{ background: 'rgba(85,51,152,0.06)', border: '1px solid rgba(85,51,152,0.12)' }}>
+            <div className="w-24 h-16 rounded-lg shrink-0" style={{ background: `linear-gradient(135deg, rgba(85,51,152,0.3), rgba(221,82,137,0.2))` }} />
+            <div className="flex-1 space-y-1.5 py-1">
+              <div className="h-3 w-3/4 rounded" style={{ background: 'rgba(255,255,255,0.1)' }} />
+              <div className="h-2 w-1/2 rounded" style={{ background: 'rgba(255,255,255,0.06)' }} />
+              <div className="h-3 w-1/4 rounded" style={{ background: 'linear-gradient(90deg,#e9a86b,#dd5289)' }} />
+            </div>
+          </div>
+        ))}
+      </div>
+    ),
+    detail: (
+      <div className="space-y-3">
+        {/* Image gallery */}
+        <div className="grid grid-cols-3 gap-1.5 h-32">
+          <div className="col-span-2 rounded-xl" style={{ background: 'linear-gradient(135deg,rgba(85,51,152,0.3),rgba(221,82,137,0.2))' }} />
+          <div className="flex flex-col gap-1.5">
+            {[1,2].map(i => <div key={i} className="flex-1 rounded-xl" style={{ background: `rgba(85,51,152,${0.1+i*0.1})` }} />)}
+          </div>
+        </div>
+        {/* Info */}
+        <div className="space-y-2">
+          <div className="h-5 w-3/4 rounded" style={{ background: 'rgba(255,255,255,0.12)' }} />
+          <div className="h-3 w-1/2 rounded" style={{ background: 'rgba(255,255,255,0.07)' }} />
+          <div className="flex gap-2 flex-wrap mt-2">
+            {['3 Quartos','2 Vagas','115m²','Novo'].map(t => (
+              <span key={t} className="px-2 py-0.5 rounded-full text-[9px]" style={{ background:'rgba(85,51,152,0.15)', border:'1px solid rgba(85,51,152,0.25)', color:'#a07fcc' }}>{t}</span>
+            ))}
+          </div>
+        </div>
+        {/* CTA */}
+        <div className="flex gap-2 pt-2">
+          <div className="flex-1 h-9 rounded-full" style={{ background: 'linear-gradient(135deg,#dd5289,#553398)' }} />
+          <div className="w-32 h-9 rounded-full" style={{ background:'rgba(85,51,152,0.15)', border:'1px solid rgba(85,51,152,0.3)' }} />
+        </div>
+      </div>
+    ),
+    contact: (
+      <div className="space-y-3">
+        <div className="h-4 w-1/2 rounded" style={{ background: 'rgba(255,255,255,0.1)' }} />
+        {['Nome Completo','E-mail','WhatsApp','Mensagem'].map((f, i) => (
+          <div key={f} className={`rounded-xl ${i === 3 ? 'h-20' : 'h-10'}`}
+            style={{ background: 'rgba(85,51,152,0.08)', border: '1.5px solid rgba(85,51,152,0.2)' }}
+          />
+        ))}
+        <div className="h-10 rounded-full" style={{ background: 'linear-gradient(135deg,#dd5289,#553398)' }} />
+      </div>
+    ),
+    admin: (
+      <div className="space-y-2">
+        {/* Sidebar + content */}
+        <div className="flex gap-2 min-h-[200px]">
+          <div className="w-16 flex flex-col gap-1.5 shrink-0">
+            {[1,2,3,4,5].map(i => <div key={i} className="h-8 rounded-lg" style={{ background: i===1 ? 'rgba(85,51,152,0.35)' : 'rgba(255,255,255,0.05)' }} />)}
+          </div>
+          <div className="flex-1 space-y-2">
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-1.5">
+              {[1,2,3].map(i => <div key={i} className="h-12 rounded-xl" style={{ background: 'rgba(85,51,152,0.1)', border: '1px solid rgba(85,51,152,0.15)' }} />)}
+            </div>
+            {/* Table rows */}
+            {[1,2,3].map(i => (
+              <div key={i} className="flex items-center gap-2 h-10 rounded-xl px-3" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <div className="w-7 h-7 rounded-lg" style={{ background: 'linear-gradient(135deg,rgba(85,51,152,0.4),rgba(221,82,137,0.3))' }} />
+                <div className="flex-1 h-2.5 rounded" style={{ background: 'rgba(255,255,255,0.08)' }} />
+                <div className="w-12 h-2 rounded" style={{ background: 'rgba(255,255,255,0.05)' }} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    ),
+  }
+
+  return (
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: '-60px' }}
+      variants={staggerContainer}
+      className="mb-8"
+    >
+      <motion.h3 variants={fadeInUp} className="text-xs font-bold uppercase tracking-[0.2em] text-foreground-subtle mb-6 flex items-center gap-3">
+        <span className="w-6 h-px" style={{ background: 'linear-gradient(90deg,#e9a86b,#553398)' }} />
+        06 — Wireframes
+      </motion.h3>
+
+      <motion.div variants={fadeInUp} className="glass-panel p-6 md:p-8">
+        <p className="text-xs text-foreground-subtle mb-5">
+          Representação estrutural das principais telas — foco em layout, hierarquia de informação e fluxo do usuário.
+        </p>
+
+        {/* Tabs */}
+        <div className="flex gap-1 mb-6 border-b border-border-subtle pb-px overflow-x-auto">
+          {WIREFRAME_TABS.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveWf(tab.id)}
+              className="px-4 py-2.5 text-sm font-semibold whitespace-nowrap transition-all relative"
+              style={{ color: activeWf === tab.id ? '#a07fcc' : 'rgba(255,255,255,0.35)' }}
+            >
+              {tab.label}
+              {activeWf === tab.id && (
+                <span
+                  className="absolute bottom-0 left-0 right-0 h-0.5 rounded-t-full"
+                  style={{ background: 'linear-gradient(90deg,#dd5289,#553398)' }}
+                />
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* Wireframe content */}
+        <div className="rounded-2xl p-5" style={{ background: 'rgba(85,51,152,0.04)', border: '1px solid rgba(85,51,152,0.12)' }}>
+          {wireframeContent[activeWf]}
+        </div>
+        <p className="text-foreground-subtle text-[10px] mt-3 text-center">
+          Wireframe estrutural — {WIREFRAME_TABS.find(t => t.id === activeWf)?.label}
+        </p>
+      </motion.div>
+    </motion.div>
+  )
+}
 
 /* ─────────────────────────────────────────────
    Page Component
 ───────────────────────────────────────────── */
 import { GetServerSideProps } from 'next'
 
-export default function CmImoveisCase({ mockupHeroUrl }: { mockupHeroUrl: string | null }) {
+export default function CmImoveisCase({ mockupHeroUrl, brandData }: {
+  mockupHeroUrl: string | null
+  brandData: {
+    brandGuidelinesUrl: string
+    logoUrl: string
+    logoDownloadUrl: string
+    brandColors: string
+    brandFontHeading: string
+    brandFontBody: string
+  } | null
+}) {
+  const colors: Array<{name: string; hex: string; fg?: string}> = (() => {
+    try { return brandData?.brandColors ? JSON.parse(brandData.brandColors) : [] }
+    catch { return [] }
+  })()
+
+  const logoUrl = brandData?.logoUrl || null
+  const logoDownloadUrl = brandData?.logoDownloadUrl || 'https://www.cmimoveisbsb.com.br/logo-cm.svg'
+  const fontHeading = brandData?.brandFontHeading || 'Playfair Display'
+  const fontBody = brandData?.brandFontBody || 'Montserrat'
+
   return (
     <>
       <Head>
@@ -444,7 +686,540 @@ export default function CmImoveisCase({ mockupHeroUrl }: { mockupHeroUrl: string
         </section>
 
         {/* ═══════════════════════════════════════════
-            IMPACTO & CTA
+            BRAND GUIDELINES
+        ═══════════════════════════════════════════ */}
+        <section id="brand" className="py-24 relative overflow-hidden">
+          {/* Background accent */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                'radial-gradient(ellipse 80% 50% at 50% 0%, rgba(85,51,152,0.08) 0%, transparent 65%)',
+            }}
+          />
+          {/* Decorative grid */}
+          <div
+            className="absolute inset-0 opacity-[0.02] pointer-events-none"
+            style={{
+              backgroundImage:
+                'linear-gradient(rgba(255,255,255,0.9) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.9) 1px, transparent 1px)',
+              backgroundSize: '48px 48px',
+            }}
+          />
+
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
+            {/* Section Header */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-80px' }}
+              variants={fadeInUp}
+              className="mb-16 text-center"
+            >
+              <p className="text-xs font-bold uppercase tracking-[0.25em] mb-3" style={{ color: '#dd5289' }}>
+                Identidade Visual
+              </p>
+              <h2 className="text-3xl md:text-4xl font-black text-foreground mb-4">
+                Brand{' '}
+                <span style={{
+                  background: 'linear-gradient(135deg, #e9a86b 0%, #dd5289 50%, #553398 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}>Guidelines</span>
+              </h2>
+              <p className="text-foreground-muted text-sm max-w-lg mx-auto leading-relaxed">
+                Sistema visual completo desenvolvido para a CM Imóveis &mdash; logo,
+                paleta, tipografia, tokens e componentes.
+              </p>
+            </motion.div>
+
+            {/* ────────────────────── 1. LOGO & IDENTIDADE */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-60px' }}
+              variants={staggerContainer}
+              className="mb-14"
+            >
+              <motion.h3 variants={fadeInUp} className="text-xs font-bold uppercase tracking-[0.2em] text-foreground-subtle mb-6 flex items-center gap-3">
+                <span className="w-6 h-px" style={{ background: 'linear-gradient(90deg,#e9a86b,#553398)' }} />
+                01 &mdash; Logo &amp; Identidade
+              </motion.h3>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                {/* Logo showcase */}
+                <motion.div variants={fadeInUp} className="lg:col-span-2 glass-panel p-8 md:p-10 flex flex-col gap-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Colorida (fundo claro) */}
+                    <div className="rounded-2xl bg-white p-8 flex items-center justify-center min-h-[120px] relative overflow-hidden">
+                      <div className="absolute inset-0 opacity-[0.03]"
+                        style={{
+                          backgroundImage: 'radial-gradient(circle, #553398 1px, transparent 1px)',
+                          backgroundSize: '20px 20px',
+                        }}
+                      />
+                      {logoUrl ? (
+                        <img src={logoUrl} alt="CM Imóveis Logo" className="max-h-16 w-auto object-contain relative z-10" />
+                      ) : (
+                        <img src="https://www.cmimoveisbsb.com.br/logo-cm.svg" alt="CM Imóveis Logo" className="max-h-16 w-auto object-contain relative z-10"
+                          onError={(e) => { (e.target as HTMLImageElement).style.display='none' }} />
+                      )}
+                      <span className="absolute bottom-2 left-3 text-[9px] font-bold uppercase tracking-widest" style={{ color:'#553398', opacity:0.5 }}>Colorida / Fundo Claro</span>
+                    </div>
+                    {/* Reversa (fundo escuro) */}
+                    <div className="rounded-2xl p-8 flex items-center justify-center min-h-[120px] relative overflow-hidden"
+                      style={{ background: 'linear-gradient(135deg, #1a1036 0%, #0e0b1a 100%)' }}>
+                      <div className="absolute inset-0 opacity-[0.05]"
+                        style={{
+                          backgroundImage: 'radial-gradient(circle, #e9a86b 1px, transparent 1px)',
+                          backgroundSize: '20px 20px',
+                        }}
+                      />
+                      {logoUrl ? (
+                        <img src={logoUrl} alt="CM Imóveis Logo Reverso" className="max-h-16 w-auto object-contain relative z-10 invert brightness-200" />
+                      ) : (
+                        <img src="https://www.cmimoveisbsb.com.br/logo-cm.svg" alt="CM Imóveis Logo Reverso" className="max-h-16 w-auto object-contain relative z-10 brightness-0 invert"
+                          onError={(e) => { (e.target as HTMLImageElement).style.display='none' }} />
+                      )}
+                      <span className="absolute bottom-2 left-3 text-[9px] font-bold uppercase tracking-widest text-white/40">Reversa / Fundo Escuro</span>
+                    </div>
+                    {/* Gradiente */}
+                    <div className="rounded-2xl p-8 flex items-center justify-center min-h-[120px] relative overflow-hidden"
+                      style={{ background: 'linear-gradient(135deg, #e9a86b, #dd5289, #553398)' }}>
+                      {logoUrl ? (
+                        <img src={logoUrl} alt="Logo Gradiente" className="max-h-16 w-auto object-contain brightness-0 invert" />
+                      ) : (
+                        <img src="https://www.cmimoveisbsb.com.br/logo-cm.svg" alt="Logo Gradiente" className="max-h-16 w-auto object-contain brightness-0 invert"
+                          onError={(e) => { (e.target as HTMLImageElement).style.display='none' }} />
+                      )}
+                      <span className="absolute bottom-2 left-3 text-[9px] font-bold uppercase tracking-widest text-white/60">Sobre Gradiente</span>
+                    </div>
+                    {/* Monocromático */}
+                    <div className="rounded-2xl p-8 flex items-center justify-center min-h-[120px] relative overflow-hidden glass-panel">
+                      {logoUrl ? (
+                        <img src={logoUrl} alt="Logo Mono" className="max-h-16 w-auto object-contain opacity-60 grayscale" />
+                      ) : (
+                        <img src="https://www.cmimoveisbsb.com.br/logo-cm.svg" alt="Logo Mono" className="max-h-16 w-auto object-contain opacity-40 grayscale"
+                          onError={(e) => { (e.target as HTMLImageElement).style.display='none' }} />
+                      )}
+                      <span className="absolute bottom-2 left-3 text-[9px] font-bold uppercase tracking-widest text-foreground-subtle opacity-50">Monocromático</span>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Regras de uso */}
+                <motion.div variants={fadeInUp} className="glass-panel p-7 flex flex-col gap-5">
+                  <div>
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold" style={{ background:'rgba(34,197,94,0.15)', color:'#86efac', border:'1px solid rgba(34,197,94,0.25)' }}>✓</span>
+                      <p className="text-sm font-bold text-foreground">Correto</p>
+                    </div>
+                    <ul className="space-y-2">
+                      {[
+                        'Use a versão colorida sobre fundos brancos e claros',
+                        'Use a versão branca sobre fundos escuros e fotos',
+                        'Mantenha o espaço de proteção ao redor da logo',
+                        'Use o gradiente apenas nos elementos definidos',
+                        'Respeite o tamanho mínimo de 24px de altura',
+                        'Use Playfair Display para títulos e Montserrat para UI',
+                      ].map((rule, i) => (
+                        <li key={i} className="flex items-start gap-2 text-xs text-foreground-muted">
+                          <span className="mt-0.5 shrink-0 text-emerald-400">✓</span>
+                          {rule}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="border-t border-border-subtle pt-5">
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold" style={{ background:'rgba(239,68,68,0.15)', color:'#fca5a5', border:'1px solid rgba(239,68,68,0.25)' }}>✕</span>
+                      <p className="text-sm font-bold text-foreground">Incorreto</p>
+                    </div>
+                    <ul className="space-y-2">
+                      {[
+                        'Não altere as cores originais da logo',
+                        'Não distorça, rotacione ou aplique efeitos',
+                        'Não use sobre fundos com baixo contraste',
+                        'Não use a versão colorida sobre fundos coloridos',
+                        'Não adicione sombras ou bordas à logo',
+                      ].map((rule, i) => (
+                        <li key={i} className="flex items-start gap-2 text-xs text-foreground-muted">
+                          <span className="mt-0.5 shrink-0 text-red-400">✕</span>
+                          {rule}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* ────────────────────── 2. PALETA DE CORES */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-60px' }}
+              variants={staggerContainer}
+              className="mb-14"
+            >
+              <motion.h3 variants={fadeInUp} className="text-xs font-bold uppercase tracking-[0.2em] text-foreground-subtle mb-6 flex items-center gap-3">
+                <span className="w-6 h-px" style={{ background: 'linear-gradient(90deg,#e9a86b,#553398)' }} />
+                02 &mdash; Paleta de Cores
+              </motion.h3>
+
+              {/* Gradient hero */}
+              <motion.div
+                variants={fadeInUp}
+                className="relative rounded-3xl h-36 mb-5 overflow-hidden group"
+                style={{ background: 'linear-gradient(135deg, #e9a86b 0%, #dd5289 50%, #553398 100%)' }}
+              >
+                <div className="absolute inset-0 opacity-10"
+                  style={{
+                    backgroundImage: 'repeating-linear-gradient(90deg, rgba(255,255,255,0.15) 0px, transparent 1px, transparent 60px, rgba(255,255,255,0.15) 61px)',
+                  }}
+                />
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
+                  <p className="text-white font-black text-2xl tracking-tight" style={{ letterSpacing: '-0.02em' }}>Gradiente da Marca</p>
+                  <p className="text-white/70 text-xs font-mono">#e9a86b &rarr; #dd5289 &rarr; #553398</p>
+                </div>
+              </motion.div>
+
+              {/* Color swatches grid */}
+              <motion.div variants={staggerContainer} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
+                {(colors.length > 0 ? colors : [
+                  { name: 'Amber', hex: '#e9a86b', fg: '#000000' },
+                  { name: 'Blush', hex: '#e8985c', fg: '#000000' },
+                  { name: 'Rose', hex: '#dd5289', fg: '#ffffff' },
+                  { name: 'Violet', hex: '#8b5ac8', fg: '#ffffff' },
+                  { name: 'Primary', hex: '#553398', fg: '#ffffff' },
+                  { name: 'Dark Navy', hex: '#363e51', fg: '#ffffff' },
+                  { name: 'Off White', hex: '#f5f2f0', fg: '#000000' },
+                ]).map((color, i) => (
+                  <motion.div key={i} variants={fadeInUp}>
+                    <BrandSwatch name={color.name} hex={color.hex} fg={color.fg} />
+                  </motion.div>
+                ))}
+              </motion.div>
+            </motion.div>
+
+            {/* ────────────────────── 3. TIPOGRAFIA */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-60px' }}
+              variants={staggerContainer}
+              className="mb-14"
+            >
+              <motion.h3 variants={fadeInUp} className="text-xs font-bold uppercase tracking-[0.2em] text-foreground-subtle mb-6 flex items-center gap-3">
+                <span className="w-6 h-px" style={{ background: 'linear-gradient(90deg,#e9a86b,#553398)' }} />
+                03 &mdash; Tipografia
+              </motion.h3>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                {/* Playfair Display */}
+                <motion.div variants={fadeInUp} className="glass-panel p-8 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 opacity-[0.04] pointer-events-none"
+                    style={{ background: 'radial-gradient(circle, #dd5289 0%, transparent 60%)' }} />
+                  <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: '#dd5289' }}>Headings &amp; Display</p>
+                  <p className="text-5xl font-black mb-6 leading-tight" style={{ fontFamily: `"${fontHeading}", serif`, color: 'var(--color-foreground)' }}>
+                    {fontHeading.split(' ')[0]}<br />
+                    <span style={{
+                      fontStyle: 'italic',
+                      background: 'linear-gradient(135deg, #e9a86b, #dd5289)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                    }}>{fontHeading.split(' ').slice(1).join(' ') || fontHeading}</span>
+                  </p>
+                  <div className="space-y-2 border-t border-border-subtle pt-5">
+                    {[
+                      { size: '48px', weight: '900', label: 'Display' },
+                      { size: '32px', weight: '700', label: 'H1' },
+                      { size: '24px', weight: '600', label: 'H2' },
+                      { size: '18px', weight: '400', label: 'H3 Italic', italic: true },
+                    ].map((s) => (
+                      <div key={s.label} className="flex items-baseline justify-between">
+                        <span style={{ fontFamily:`"${fontHeading}", serif`, fontSize: s.size, fontWeight: s.weight, fontStyle: s.italic ? 'italic' : 'normal', color: 'var(--color-foreground)', lineHeight: 1.2 }}>
+                          Imóveis
+                        </span>
+                        <span className="text-[10px] font-mono text-foreground-subtle ml-4 shrink-0">{s.label} / {s.size} / {s.weight}</span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* Montserrat */}
+                <motion.div variants={fadeInUp} className="glass-panel p-8 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 opacity-[0.04] pointer-events-none"
+                    style={{ background: 'radial-gradient(circle, #553398 0%, transparent 60%)' }} />
+                  <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: '#8b5ac8' }}>UI &amp; Body Copy</p>
+                  <p className="text-5xl font-black mb-6 leading-tight" style={{ fontFamily: `${fontBody}, sans-serif`, color: 'var(--color-foreground)' }}>
+                    {fontBody.slice(0, Math.ceil(fontBody.length/2))}<span style={{
+                      background: 'linear-gradient(135deg, #8b5ac8, #553398)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                    }}>{fontBody.slice(Math.ceil(fontBody.length/2))}</span>
+                  </p>
+                  <div className="space-y-3 border-t border-border-subtle pt-5">
+                    {[
+                      { size: '14px', weight: '800', label: 'Label/CTA', sample: 'VER IMÓVEIS' },
+                      { size: '14px', weight: '600', label: 'Body Bold', sample: 'Apartamento 3 quartos' },
+                      { size: '13px', weight: '500', label: 'Body Regular', sample: 'Asa Norte, Brasília - DF' },
+                      { size: '11px', weight: '400', label: 'Caption', sample: 'Cód. 00123 · Publicado hoje' },
+                    ].map((s) => (
+                      <div key={s.label} className="flex items-center justify-between gap-4">
+                        <span style={{ fontFamily:`${fontBody}, sans-serif`, fontSize: s.size, fontWeight: s.weight, color: 'var(--color-foreground-muted)', lineHeight: 1.4 }}>
+                          {s.sample}
+                        </span>
+                        <span className="text-[10px] font-mono text-foreground-subtle shrink-0">{s.label} / {s.size}</span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* ────────────────────── 4. DESIGN TOKENS */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-60px' }}
+              variants={staggerContainer}
+              className="mb-14"
+            >
+              <motion.h3 variants={fadeInUp} className="text-xs font-bold uppercase tracking-[0.2em] text-foreground-subtle mb-6 flex items-center gap-3">
+                <span className="w-6 h-px" style={{ background: 'linear-gradient(90deg,#e9a86b,#553398)' }} />
+                04 &mdash; Design Tokens
+              </motion.h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                {/* Border Radius */}
+                <motion.div variants={fadeInUp} className="glass-panel p-6">
+                  <p className="text-xs font-bold uppercase tracking-widest mb-5 text-foreground-subtle">Border Radius</p>
+                  <div className="space-y-3">
+                    {[
+                      { label: 'sm', value: '4px', size: 4 },
+                      { label: 'md', value: '8px', size: 8 },
+                      { label: 'lg', value: '12px', size: 12 },
+                      { label: 'xl', value: '16px', size: 16 },
+                      { label: '2xl', value: '24px', size: 24 },
+                      { label: 'full', value: '9999px', size: 9999 },
+                    ].map(r => (
+                      <div key={r.label} className="flex items-center gap-3">
+                        <div
+                          className="w-10 h-10 shrink-0 border-2"
+                          style={{ borderRadius: r.value, borderColor: '#553398', background: 'rgba(85,51,152,0.08)' }}
+                        />
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">{r.label}</p>
+                          <p className="text-[10px] font-mono text-foreground-subtle">{r.value}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* Sombras */}
+                <motion.div variants={fadeInUp} className="glass-panel p-6">
+                  <p className="text-xs font-bold uppercase tracking-widest mb-5 text-foreground-subtle">Sombras</p>
+                  <div className="space-y-4 bg-white/5 rounded-xl p-4">
+                    {[
+                      { label: 'sm', css: '0 1px 3px rgba(85,51,152,0.15)' },
+                      { label: 'md', css: '0 4px 12px rgba(85,51,152,0.20)' },
+                      { label: 'lg', css: '0 8px 32px rgba(85,51,152,0.25)' },
+                      { label: 'xl', css: '0 16px 48px rgba(85,51,152,0.30)' },
+                      { label: 'glow', css: '0 0 24px rgba(221,82,137,0.35)' },
+                    ].map(s => (
+                      <div key={s.label} className="flex items-center gap-3">
+                        <div
+                          className="w-10 h-10 rounded-xl shrink-0 bg-white"
+                          style={{ boxShadow: s.css }}
+                        />
+                        <div>
+                          <p className="text-xs font-semibold text-foreground">{s.label}</p>
+                          <p className="text-[10px] font-mono text-foreground-subtle leading-tight">{s.css.substring(0, 28)}…</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* Espaçamento */}
+                <motion.div variants={fadeInUp} className="glass-panel p-6">
+                  <p className="text-xs font-bold uppercase tracking-widest mb-5 text-foreground-subtle">Espaçamento</p>
+                  <div className="space-y-3">
+                    {[
+                      { label: 'xs', value: '4px', w: '4px' },
+                      { label: 'sm', value: '8px', w: '8px' },
+                      { label: 'md', value: '16px', w: '16px' },
+                      { label: 'lg', value: '24px', w: '24px' },
+                      { label: 'xl', value: '32px', w: '32px' },
+                      { label: '2xl', value: '48px', w: '48px' },
+                      { label: '3xl', value: '64px', w: '64px' },
+                    ].map(s => (
+                      <div key={s.label} className="flex items-center gap-3">
+                        <div
+                          className="h-5 rounded-sm shrink-0"
+                          style={{ width: s.w, background: 'linear-gradient(90deg, #e9a86b, #553398)', minWidth: s.w }}
+                        />
+                        <div className="flex items-center gap-2">
+                          <p className="text-xs font-semibold text-foreground">{s.label}</p>
+                          <p className="text-[10px] font-mono text-foreground-subtle">{s.value}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* ────────────────────── 5. COMPONENTES */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-60px' }}
+              variants={staggerContainer}
+              className="mb-14"
+            >
+              <motion.h3 variants={fadeInUp} className="text-xs font-bold uppercase tracking-[0.2em] text-foreground-subtle mb-6 flex items-center gap-3">
+                <span className="w-6 h-px" style={{ background: 'linear-gradient(90deg,#e9a86b,#553398)' }} />
+                05 &mdash; Componentes
+              </motion.h3>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                {/* Botões */}
+                <motion.div variants={fadeInUp} className="glass-panel p-7">
+                  <p className="text-xs font-bold uppercase tracking-widest mb-5 text-foreground-subtle">Botões</p>
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      className="px-5 py-2.5 rounded-full text-sm font-bold text-white transition-all hover:-translate-y-0.5"
+                      style={{ background: 'linear-gradient(135deg, #dd5289, #553398)', fontFamily: 'Montserrat, sans-serif' }}
+                    >
+                      Ver Imóveis
+                    </button>
+                    <button
+                      className="px-5 py-2.5 rounded-full text-sm font-semibold transition-all hover:-translate-y-0.5"
+                      style={{ border: '1.5px solid #553398', color: '#8b5ac8', fontFamily: 'Montserrat, sans-serif', background: 'transparent' }}
+                    >
+                      Saiba Mais
+                    </button>
+                    <button
+                      className="px-5 py-2.5 rounded-full text-sm font-bold text-white transition-all hover:-translate-y-0.5"
+                      style={{ background: '#e9a86b', color: '#1a0e00', fontFamily: 'Montserrat, sans-serif' }}
+                    >
+                      Contato
+                    </button>
+                    <button
+                      className="px-5 py-2.5 rounded-full text-sm font-semibold text-white transition-all hover:-translate-y-0.5"
+                      style={{ background: 'rgba(85,51,152,0.15)', border: '1px solid rgba(85,51,152,0.3)', fontFamily: 'Montserrat, sans-serif' }}
+                    >
+                      Ghost
+                    </button>
+                  </div>
+                </motion.div>
+
+                {/* Badges / Tags */}
+                <motion.div variants={fadeInUp} className="glass-panel p-7">
+                  <p className="text-xs font-bold uppercase tracking-widest mb-5 text-foreground-subtle">Badges / Tags</p>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { label: 'Apartamento', bg: 'rgba(85,51,152,0.15)', color: '#a07fcc', border: 'rgba(85,51,152,0.3)' },
+                      { label: 'Casa', bg: 'rgba(233,168,107,0.15)', color: '#e9a86b', border: 'rgba(233,168,107,0.3)' },
+                      { label: 'Comercial', bg: 'rgba(221,82,137,0.12)', color: '#dd5289', border: 'rgba(221,82,137,0.25)' },
+                      { label: '3 Quartos', bg: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.6)', border: 'rgba(255,255,255,0.12)' },
+                      { label: 'Novo', bg: 'rgba(34,197,94,0.12)', color: '#86efac', border: 'rgba(34,197,94,0.25)' },
+                      { label: 'Asa Norte', bg: 'rgba(85,51,152,0.10)', color: '#8b5ac8', border: 'rgba(85,51,152,0.20)' },
+                      { label: 'R$ 650.000', bg: 'rgba(233,168,107,0.12)', color: '#e9a86b', border: 'rgba(233,168,107,0.25)' },
+                    ].map(b => (
+                      <span
+                        key={b.label}
+                        className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold"
+                        style={{ background: b.bg, color: b.color, border: `1px solid ${b.border}`, fontFamily: 'Montserrat, sans-serif' }}
+                      >
+                        {b.label}
+                      </span>
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* Inputs */}
+                <motion.div variants={fadeInUp} className="glass-panel p-7">
+                  <p className="text-xs font-bold uppercase tracking-widest mb-5 text-foreground-subtle">Inputs</p>
+                  <div className="space-y-3">
+                    <div className="relative">
+                      <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#8b5ac8" strokeWidth={2}>
+                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                      </svg>
+                      <input
+                        readOnly
+                        defaultValue=""
+                        placeholder="Buscar por bairro ou cidade…"
+                        className="w-full rounded-xl py-3 pl-10 pr-4 text-sm outline-none text-white placeholder-white/40"
+                        style={{
+                          background: 'rgba(85,51,152,0.08)',
+                          border: '1.5px solid rgba(85,51,152,0.3)',
+                          fontFamily: 'Montserrat, sans-serif',
+                        }}
+                        onFocus={e => (e.target.style.borderColor = '#8b5ac8')}
+                        onBlur={e => (e.target.style.borderColor = 'rgba(85,51,152,0.3)')}
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      {['Tipo', 'Quartos', 'Preço', 'Bairro'].map(f => (
+                        <button key={f}
+                          className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all"
+                          style={{ background: 'rgba(85,51,152,0.08)', border: '1px solid rgba(85,51,152,0.2)', color: '#a07fcc', fontFamily: 'Montserrat, sans-serif' }}
+                        >
+                          {f}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Card de Imóvel */}
+                <motion.div variants={fadeInUp} className="glass-panel p-7">
+                  <p className="text-xs font-bold uppercase tracking-widest mb-5 text-foreground-subtle">Cartão de Imóvel</p>
+                  <div className="rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(85,51,152,0.2)', background: 'rgba(85,51,152,0.04)' }}>
+                    {/* Image placeholder */}
+                    <div className="h-36 relative" style={{ background: 'linear-gradient(135deg, rgba(85,51,152,0.25), rgba(221,82,137,0.15))' }}>
+                      <div className="absolute inset-0 opacity-10"
+                        style={{ backgroundImage: 'radial-gradient(circle, #e9a86b 1px, transparent 1px)', backgroundSize: '24px 24px' }}
+                      />
+                      <span className="absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-full text-white"
+                        style={{ background: 'linear-gradient(135deg,#dd5289,#553398)', fontFamily: 'Montserrat, sans-serif' }}>
+                        NOVO
+                      </span>
+                      <span className="absolute top-3 right-3 text-[10px] font-bold px-2.5 py-1 rounded-full"
+                        style={{ background: 'rgba(0,0,0,0.5)', color: '#e9a86b', fontFamily: 'Montserrat, sans-serif' }}>
+                        Asa Norte
+                      </span>
+                    </div>
+                    <div className="p-4">
+                      <p className="font-black text-sm mb-0.5" style={{ fontFamily: '"Playfair Display", serif', color: 'var(--color-foreground)' }}>Apartamento Premium 3Q</p>
+                      <p className="text-xs mb-3" style={{ color: 'rgba(255,255,255,0.5)', fontFamily: 'Montserrat, sans-serif' }}>SHIN QI 05, Asa Norte · 115m²</p>
+                      <div className="flex items-center justify-between">
+                        <p className="font-black text-lg" style={{ background: 'linear-gradient(135deg,#e9a86b,#dd5289)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text', fontFamily: 'Montserrat, sans-serif' }}>R$ 850.000</p>
+                        <button className="text-xs font-bold px-4 py-2 rounded-full text-white"
+                          style={{ background: 'linear-gradient(135deg, #dd5289, #553398)', fontFamily: 'Montserrat, sans-serif' }}>
+                          Ver
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* ────────────────────── 6. WIREFRAMES */}
+            <BrandWireframes />
+
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════════════
         ═══════════════════════════════════════════ */}
         <section className="py-24 relative overflow-hidden">
           {/* Full-bleed glow */}
@@ -572,15 +1347,30 @@ export const getServerSideProps: GetServerSideProps = async () => {
     const { prisma } = await import('../../lib/prisma')
     const project = await prisma.clientProject.findUnique({
       where: { slug: 'cm-imoveis' },
-      select: { mockupHeroUrl: true }
+      select: {
+        mockupHeroUrl: true,
+        brandGuidelinesUrl: true,
+        logoUrl: true,
+        logoDownloadUrl: true,
+        brandColors: true,
+        brandFontHeading: true,
+        brandFontBody: true,
+      }
     })
     return {
       props: {
-        mockupHeroUrl: project?.mockupHeroUrl || null
+        mockupHeroUrl: project?.mockupHeroUrl || null,
+        brandData: project ? {
+          brandGuidelinesUrl: project.brandGuidelinesUrl || '',
+          logoUrl: project.logoUrl || '',
+          logoDownloadUrl: project.logoDownloadUrl || 'https://www.cmimoveisbsb.com.br/logo-cm.svg',
+          brandColors: project.brandColors || '',
+          brandFontHeading: project.brandFontHeading || 'Playfair Display',
+          brandFontBody: project.brandFontBody || 'Montserrat',
+        } : null
       }
     }
   } catch {
-    return { props: { mockupHeroUrl: null } }
+    return { props: { mockupHeroUrl: null, brandData: null } }
   }
 }
-

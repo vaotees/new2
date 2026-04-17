@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   if (req.method === 'PATCH') {
-    const { siteTitle, metaDescription, ogImage, keywords, canonicalUrl, robotsIndex } = req.body
+    const { siteTitle, metaDescription, ogImage, keywords, canonicalUrl, robotsIndex, googleAnalyticsId } = req.body
     try {
       const updated = await prisma.seoConfig.upsert({
         where: { id: 'singleton' },
@@ -30,6 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           keywords: keywords ?? '',
           canonicalUrl: canonicalUrl ?? '',
           robotsIndex: robotsIndex ?? true,
+          googleAnalyticsId: googleAnalyticsId ?? '',
         },
         update: {
           ...(siteTitle !== undefined && { siteTitle }),
@@ -38,6 +39,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           ...(keywords !== undefined && { keywords }),
           ...(canonicalUrl !== undefined && { canonicalUrl }),
           ...(robotsIndex !== undefined && { robotsIndex }),
+          ...(googleAnalyticsId !== undefined && { googleAnalyticsId }),
         },
       })
       return res.status(200).json(updated)

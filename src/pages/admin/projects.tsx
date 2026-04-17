@@ -38,6 +38,12 @@ interface ClientProject {
   challengeText: string
   solutionText: string
   impactText: string
+  brandGuidelinesUrl: string
+  logoUrl: string
+  logoDownloadUrl: string
+  brandColors: string
+  brandFontHeading: string
+  brandFontBody: string
   published: boolean
   highlights: Highlight[]
   createdAt?: string
@@ -70,6 +76,12 @@ const emptyForm = (): Omit<ClientProject, "id" | "order" | "createdAt"> => ({
   challengeText: "",
   solutionText: "",
   impactText: "",
+  brandGuidelinesUrl: "",
+  logoUrl: "",
+  logoDownloadUrl: "",
+  brandColors: "",
+  brandFontHeading: "Playfair Display",
+  brandFontBody: "Montserrat",
   published: true,
   highlights: [emptyHighlight()],
 })
@@ -82,6 +94,7 @@ const TABS = [
   { id: "content", label: "Conteúdo", icon: FileText },
   { id: "highlights", label: "Destaques", icon: Lightbulb },
   { id: "media", label: "Mídia & Links", icon: ImageIcon },
+  { id: "brand", label: "Marca & Brand", icon: Tag },
 ]
 
 /* ─────────────────────────────────────────────────────────────
@@ -543,6 +556,218 @@ function ImageUploader({ label, description, aspectHint, value, onChange }: Imag
   )
 }
 
+
+/* ─────────────────────────────────────────────────────────────
+   Brand Accordion (Marca & Brand tab)
+──────────────────────────────────────────────────────────────*/
+type BrandAccordionProps = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  form: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  setForm: (fn: (f: any) => any) => void
+}
+
+function BrandAccordion({ form, setForm }: BrandAccordionProps) {
+  const [open, setOpen] = useState<Record<string, boolean>>({ '01': true, '02': true, '03': false })
+  const toggle = (id: string) => setOpen(o => ({ ...o, [id]: !o[id] }))
+
+  const sections = [
+    {
+      id: '01',
+      gradient: 'linear-gradient(135deg,#dd5289,#553398)',
+      label: 'Logo & Identidade',
+      desc: 'Controla as 4 variações de logo exibidas na página.',
+      content: (
+        <div className="p-5 space-y-4">
+          <ImageUploader
+            label="Imagem do Logo Principal"
+            description="Exibida nas 4 variações de logo (fundo claro, escuro, gradiente e monocromático)."
+            aspectHint="Qualquer proporção"
+            value={form.logoUrl}
+            onChange={(url: string | null) => setForm((f: typeof form) => ({ ...f, logoUrl: url || '' }))}
+          />
+          <Field label="URL das Brand Guidelines (externo)" hint="Link para a página completa de brand guidelines do cliente — referência interna.">
+            <div className="relative">
+              <ExternalLink className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+              <input
+                type="url"
+                value={form.brandGuidelinesUrl}
+                onChange={e => setForm((f: typeof form) => ({ ...f, brandGuidelinesUrl: e.target.value }))}
+                placeholder="https://cliente.com/brand-guidelines"
+                className="w-full bg-white/5 border border-white/10 text-white rounded-xl pl-10 pr-4 py-2.5
+                  outline-none focus:border-orange-500/50 placeholder-white/20 transition-all"
+              />
+            </div>
+          </Field>
+        </div>
+      ),
+    },
+    {
+      id: '02',
+      gradient: 'linear-gradient(135deg,#e9a86b,#dd5289)',
+      label: 'Paleta de Cores',
+      desc: "Controla os swatches — o gradiente é gerado pelas 3 primeiras cores.",
+      content: (
+        <div className="p-5 space-y-4">
+          <Field
+            label="Cores da Marca (JSON)"
+            hint='[{"name":"Amber","hex":"#e9a86b","fg":"#000"}, ...] — "fg" é a cor do texto sobre o swatch.'
+          >
+            <textarea
+              value={form.brandColors}
+              onChange={e => setForm((f: typeof form) => ({ ...f, brandColors: e.target.value }))}
+              rows={7}
+              placeholder={'[\n  {"name": "Amber", "hex": "#e9a86b", "fg": "#000000"},\n  {"name": "Rose", "hex": "#dd5289", "fg": "#ffffff"},\n  {"name": "Primary", "hex": "#553398", "fg": "#ffffff"},\n  {"name": "Dark Navy", "hex": "#363e51", "fg": "#ffffff"},\n  {"name": "Off White", "hex": "#f5f2f0", "fg": "#000000"}\n]'}
+              className="w-full bg-white/5 border border-white/10 text-white rounded-xl px-4 py-2.5 outline-none
+                focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 placeholder-white/20
+                transition-all resize-none font-mono text-xs"
+            />
+          </Field>
+          {(() => {
+            try {
+              const colors: Array<{ name: string; hex: string }> = JSON.parse(form.brandColors || '[]')
+              if (!colors.length) return null
+              return (
+                <div>
+                  <p className="text-white/40 text-xs mb-2">Preview ao vivo:</p>
+                  <div className="flex flex-wrap gap-2.5">
+                    {colors.map((c, i) => (
+                      <div key={i} className="flex flex-col items-center gap-1">
+                        <div className="w-10 h-10 rounded-xl border border-white/10 shadow" style={{ background: c.hex }} title={c.hex} />
+                        <span className="text-[9px] font-mono text-white/35">{c.hex}</span>
+                        <span className="text-[9px] text-white/55 max-w-[44px] text-center leading-tight">{c.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            } catch {
+              return <p className="text-red-400/80 text-xs">JSON inválido — verifique a sintaxe.</p>
+            }
+          })()}
+        </div>
+      ),
+    },
+    {
+      id: '03',
+      gradient: 'linear-gradient(135deg,#8b5ac8,#553398)',
+      label: 'Tipografia',
+      desc: 'Define as fontes Heading e Body — devem estar no Google Fonts.',
+      content: (
+        <div className="p-5 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Fonte do Heading / Display" hint="Ex: Playfair Display, Cormorant, Merriweather">
+              <input
+                type="text"
+                value={form.brandFontHeading}
+                onChange={e => setForm((f: typeof form) => ({ ...f, brandFontHeading: e.target.value }))}
+                placeholder="Playfair Display"
+                className="w-full bg-white/5 border border-white/10 text-white rounded-xl px-4 py-2.5
+                  outline-none focus:border-orange-500/50 placeholder-white/20 transition-all"
+              />
+            </Field>
+            <Field label="Fonte do Body / UI" hint="Ex: Montserrat, Inter, Nunito">
+              <input
+                type="text"
+                value={form.brandFontBody}
+                onChange={e => setForm((f: typeof form) => ({ ...f, brandFontBody: e.target.value }))}
+                placeholder="Montserrat"
+                className="w-full bg-white/5 border border-white/10 text-white rounded-xl px-4 py-2.5
+                  outline-none focus:border-orange-500/50 placeholder-white/20 transition-all"
+              />
+            </Field>
+          </div>
+          {(form.brandFontHeading || form.brandFontBody) && (
+            <div className="rounded-xl bg-white/[0.03] border border-white/8 p-4 flex gap-6">
+              <div className="flex-1 min-w-0">
+                <p className="text-[9px] uppercase tracking-widest text-white/30 mb-1">Heading</p>
+                <p style={{ fontFamily: `"${form.brandFontHeading}", serif`, fontSize: '26px', fontWeight: 900, color: '#fff', lineHeight: 1.2 }} className="truncate">
+                  {form.brandFontHeading || '–'}
+                </p>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[9px] uppercase tracking-widest text-white/30 mb-1">Body</p>
+                <p style={{ fontFamily: `"${form.brandFontBody}", sans-serif`, fontSize: '13px', fontWeight: 500, color: 'rgba(255,255,255,0.55)', lineHeight: 1.6 }}>
+                  {form.brandFontBody || '–'} — Texto de parágrafo e UI.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      ),
+    },
+  ]
+
+  return (
+    <div className="space-y-3">
+      {/* descriptor */}
+      <div className="flex items-center gap-2 pb-3 border-b border-white/8">
+        <Tag className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+        <p className="text-xs text-white/45">
+          Clique em cada seção para expandir e editar.{' '}
+          <span className="text-orange-400/70 font-mono">/cases/cm-imoveis#brand</span>
+        </p>
+      </div>
+
+      {/* Editable accordion sections */}
+      {sections.map(s => (
+        <div key={s.id} className="rounded-xl border border-white/8 overflow-hidden">
+          {/* Header — clickable */}
+          <button
+            type="button"
+            onClick={() => toggle(s.id)}
+            className="w-full flex items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-white/[0.06] active:bg-white/[0.04]"
+            style={{ background: open[s.id] ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.03)' }}
+          >
+            <span className="w-7 h-7 rounded-full text-[10px] font-black flex items-center justify-center shrink-0"
+              style={{ background: s.gradient, color: '#fff' }}>{s.id}</span>
+            <div className="flex-1 text-left">
+              <p className="text-sm font-bold text-white leading-none mb-0.5">{s.label}</p>
+              <p className="text-[10px] text-white/35 leading-relaxed">{s.desc}</p>
+            </div>
+            <ChevronDown
+              className="w-4 h-4 text-white/30 shrink-0 transition-transform duration-200"
+              style={{ transform: open[s.id] ? 'rotate(180deg)' : 'rotate(0deg)' }}
+            />
+          </button>
+
+          {/* Content — collapsible */}
+          <div
+            style={{
+              maxHeight: open[s.id] ? '1200px' : '0px',
+              overflow: 'hidden',
+              transition: 'max-height 0.3s ease',
+            }}
+          >
+            <div className="border-t border-white/8">
+              {s.content}
+            </div>
+          </div>
+        </div>
+      ))}
+
+      {/* Informational 04–06 */}
+      <div className="rounded-xl border border-white/8 bg-white/[0.015] px-4 py-3 space-y-2">
+        <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">Geradas automaticamente</p>
+        {[
+          { n: '04', label: 'Design Tokens', desc: 'Border radius, sombras e espaçamento — sistema padrão.' },
+          { n: '05', label: 'Componentes', desc: 'Botões, badges e card — usam as cores da seção 02.' },
+          { n: '06', label: 'Wireframes', desc: '5 telas estruturais (Home, Listagem, Detalhe, Contato, Admin).' },
+        ].map(s => (
+          <div key={s.n} className="flex items-start gap-3 py-1.5">
+            <span className="w-5 h-5 rounded-full text-[9px] font-black flex items-center justify-center shrink-0 mt-0.5"
+              style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.25)' }}>{s.n}</span>
+            <div>
+              <p className="text-xs font-semibold text-white/35">{s.label}</p>
+              <p className="text-[10px] text-white/20 leading-relaxed">{s.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 /* ─────────────────────────────────────────────────────────────
    Main Page
 ──────────────────────────────────────────────────────────────*/
@@ -606,6 +831,12 @@ export default function AdminProjects() {
       challengeText: p.challengeText,
       solutionText: p.solutionText,
       impactText: p.impactText,
+      brandGuidelinesUrl: p.brandGuidelinesUrl || "",
+      logoUrl: p.logoUrl || "",
+      logoDownloadUrl: p.logoDownloadUrl || "",
+      brandColors: p.brandColors || "",
+      brandFontHeading: p.brandFontHeading || "Playfair Display",
+      brandFontBody: p.brandFontBody || "Montserrat",
       published: p.published,
       highlights: p.highlights.length ? p.highlights : [emptyHighlight()],
     })
@@ -1224,6 +1455,11 @@ export default function AdminProjects() {
                 </>
               )}
             </div>
+
+            {/* ── TAB: Marca & Brand ────────────── */}
+            {activeTab === "brand" && (
+              <BrandAccordion form={form} setForm={setForm} />
+            )}
 
             {/* Feedback messages */}
             {(error || success) && (

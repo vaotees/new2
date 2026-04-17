@@ -31,7 +31,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const {
         slug, category, clientName, tagline, description, role,
         status, year, liveUrl, caseUrl, mockupCardUrl, mockupHeroUrl, stackTags,
-        challengeText, solutionText, impactText, published, highlights
+        challengeText, solutionText, impactText, published, highlights,
+        brandGuidelinesUrl, logoUrl, logoDownloadUrl, brandColors,
+        brandFontHeading, brandFontBody
       } = req.body
 
       if (!slug || !clientName) {
@@ -59,6 +61,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           challengeText: challengeText || "",
           solutionText: solutionText || "",
           impactText: impactText || "",
+          brandGuidelinesUrl: brandGuidelinesUrl || "",
+          logoUrl: logoUrl || "",
+          logoDownloadUrl: logoDownloadUrl || "",
+          brandColors: brandColors || "",
+          brandFontHeading: brandFontHeading || "Playfair Display",
+          brandFontBody: brandFontBody || "Montserrat",
           published: published !== false,
           highlights: highlights?.length
             ? {
